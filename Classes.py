@@ -50,18 +50,31 @@ def Type(message):
         time.sleep(0.075)
     print('')
 
+def Fight(y,x,player,target,all):
+    print(target.hp)
+    a = random.randint(0,6)
+    print(f"You attacked {target.name} for {a} points")
+    target.hp -= a
+    if target.hp < 0:
+        print(f"{player.name} has defeated {target.name}!")
+        all.remove(target.name)
+        player.location.mapper[y][x] = '.'
+    print(target.hp)
+
 class Weapons:
-    def __init__(item, name, atk, ob):
+    def __init__(item, name, atk,charges):
         item.name = name
         item.atk = atk
+        item.charges
 
 class Goblin:
-    def __init__(mob):
-        mob.name = 'Goblin'
+    def __init__(mob,name):
+        mob.name = name
         mob.hp = 15
         mob.atk = 1
         mob.exp = 5
         mob.gold = 2
+
 
 class Slime:
     def __init__(mob,name):
@@ -91,36 +104,147 @@ class Stats:
      self.maxhp = maxhp
                   
     def Combat(self,Enemies):
-        Combat = Combat_Area('Combat',[["~","~","~","~","~","~","~"],
-                  ["~",".",".",".",".",".","~"],
-                  ["~",".",".",".",".",".","~"],
-                  ["~",".",".",".",".",".","~"],
-                  ["~",".",".",".",".",".","~"],
-                  ["~",".",".",".",".",".","~"],
-                  ["~","~","~","~","~","~","~"]],'.',1,3,{'Goblin1':'$','Goblin2':'$','Goblin3':'$','Fire Slime':'*'})
-        for i in Enemies:
-            y = 1
-            x = 5
-            Combat.mapper[y+1][x-1] = Combat.emap[i]
+        Combat = Combat_Area('Combat',[['~','~','~','~','~'],
+        ['~','.','.','.','~'],
+        ['~','.','.','.','~'],
+        ['~','.','.','.','~'],
+        ['~','~','~','~','~']],'.',1,3,{'Goblin1':'$','Goblin2':'#','Goblin3':'%','Fire Slime':'*','$':Fight},{'$':'Goblin1','#':'Goblin2','%':'Goblin3'})
+        self.location = Combat
+        y = 0
+        x = 3
+        for q,i in enumerate(Enemies):
+            if q < 4:
+                y += 1
+                Combat.mapper[y][x] = Combat.emap[i]
+            elif q >= 4:
+                y -= 1
+                x = 2
+                Combat.mapper[y][x] = Combat.emap[i]
             if i == 'Goblin1':
-                Gob1 = Goblin()
+                Gob1 = Goblin('Goblin1')
             elif i == 'Goblin2':
-                Gob2 = Goblin()
+                Gob2 = Goblin('Goblin2')
             elif i == 'Goblin3':
-                Gob3 = Goblin()
-            elif i == 'Fire Slime':
-                Fire_Slime = Slime(i)
+                Gob3 = Goblin('Goblin3')
         Combat.Update(self)
         while Enemies != []:
+            self.location.mapper[self.location.l_y][self.location.l_x] = self.location.Last1
             key = readchar.readkey()
-            if key == 'w':
-                print("This works")
+            if key == 'q':
+                Enemies = []
+                Type("What item would you like to use?")
+                for o,i in enumerate(self.inv):
+                    print(f"{o} - {i}")
+                items = dict(enumerate(self.inv,0))
+                item = input("Enter the number. > ")
+                try: 
+                    wp = items[int(item)]
+                    Type(f"You have equipped the {wp}!")
+                except:
+                    print("You don't have that item.")
+            elif key == "w":
+                self.location.py_y -= 1
+                if self.location.mapper[self.location.py_y][self.location.py_x] == "~":
+                    self.location.py_y += 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$" or self.location.mapper[self.location.py_y][self.location.py_x] == "#" or self.location.mapper[self.location.py_y][self.location.py_x] == "%": 
+                    info = self.location.emap['$']
+                    if self.location.mapper[self.location.py_y][self.location.py_x] == "$":
+                        if self.location.fmap['$'] == 'Goblin1':
+                            info(self.location.py_y,self.location.py_x,self,Gob1,Enemies)
+                    elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
+                        info(self.location,self,'#')
+                    elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
+                        info(self.location,self,'%')
+                    self.location.py_y += 1
+                    continue
+                else:
+                    self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
+                    self.location.l_y = self.location.py_y
+                    self.location.l_x = self.location.py_x
+                    self.location.mapper[self.location.py_y][self.location.py_x] = '@'
+            elif key == "s":
+                self.location.py_y += 1
+                if self.location.mapper[self.location.py_y][self.location.py_x] == "~":
+                    self.location.py_y -= 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$" or self.location.mapper[self.location.py_y][self.location.py_x] == "#" or self.location.mapper[self.location.py_y][self.location.py_x] == "%":
+                    info = self.location.emap['$']
+                    if self.location.mapper[self.location.py_y][self.location.py_x] == "$":
+                        if self.location.fmap['$'] == 'Goblin1':
+                            info(self.location.py_y,self.location.py_x,self,Gob1,Enemies)
+                    elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
+                        info(self.location,self,'#')
+                    elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
+                        info(self.location,self,'%')
+                    self.location.py_y -= 1
+                    continue
+                else:
+                    self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
+                    self.location.l_y = self.location.py_y
+                    self.location.l_x = self.location.py_x
+                    self.location.mapper[self.location.py_y][self.location.py_x] = '@'
+            elif key == "a":
+                self.location.py_x -= 1
+                if self.location.mapper[self.location.py_y][self.location.py_x] == "~":
+                    self.location.py_x += 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$" or self.location.mapper[self.location.py_y][self.location.py_x] == "#" or self.location.mapper[self.location.py_y][self.location.py_x] == "%":
+                    info = self.location.emap['$']
+                    if self.location.mapper[self.location.py_y][self.location.py_x] == "$":
+                        if self.location.fmap['$'] == 'Goblin1':
+                            info(self.location.py_y,self.location.py_x,self,Gob1,Enemies)
+                    elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
+                        info(self.location,self,'#')
+                    elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
+                        info(self.location,self,'%')
+                    self.location.py_x += 1
+                    continue
+                else:
+                    self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
+                    self.location.l_y = self.location.py_y
+                    self.location.l_x = self.location.py_x
+                    self.location.mapper[self.location.py_y][self.location.py_x] = '@'              
+            elif key == "d":
+                self.location.py_x += 1
+                if self.location.mapper[self.location.py_y][self.location.py_x] == "~":
+                    self.location.py_x -= 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$" or self.location.mapper[self.location.py_y][self.location.py_x] == "#" or self.location.mapper[self.location.py_y][self.location.py_x] == "%":
+                    info = self.location.emap['$']
+                    if self.location.mapper[self.location.py_y][self.location.py_x] == "$":
+                        if self.location.fmap['$'] == 'Goblin1':
+                            info(self.location.py_y,self.location.py_x,self,Gob1,Enemies)
+                    elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
+                        info(self.location,self,'#')
+                    elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
+                        info(self.location,self,'%')
+                    self.location.py_x -= 1
+                    continue
+                else:
+                    self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
+                    self.location.l_y = self.location.py_y
+                    self.location.l_x = self.location.py_x
+                    self.location.mapper[self.location.py_y][self.location.py_x] = '@'
+            self.location.Update(self)  
+        self.location = last_loc
+                
 
     def Actions(self):
         while True:
             key = readchar.readkey()
             self.location.mapper[self.location.l_y][self.location.l_x] = self.location.Last1
-            if key == "p":
+            if key == 'q':
+                Type("What item would you like to use?")
+                for o,i in enumerate(self.inv):
+                    print(f"{o} - {i}")
+                items = dict(enumerate(self.inv))
+                item = input("Enter the number. > ")
+                try: 
+                    print(items[int(item)])
+                except:
+                    print("You don't have that item.")
+            elif key == "p":
                 os.system('clear')
                 Type("Saving....")
                 Save(self)
@@ -238,8 +362,9 @@ class Area:
             print(' '.join(map(str, row)))
 
 class Combat_Area(Area):
-    def __init__(zone, name, map1, start, x, y, emap):
+    def __init__(zone, name, map1, start, x, y, emap,fmap):
         super().__init__(name, map1, start, x, y, emap)
+        zone.fmap = fmap
 
     def Update(self,player):
         os.system('clear')
@@ -260,7 +385,11 @@ def Tut_Fight(player):
     Type(f'[Ambrosia]: Is that a goblin? Quick use this!')
     Type('You obtained a Fire amulet!')
     player.inv.append("Fire Amulet")
-    player.Combat(["Goblin1","Fire Slime"])
+    Type(f"[Tutorial]: {player.name}, click q to use the fire amulet.")
+    global last_loc
+    last_loc = Tut
+    player.Combat(["Goblin1","Goblin2","Goblin3"])
+    player.Actions()
     
 
 def Amb(loc,player):
