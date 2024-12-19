@@ -1,5 +1,4 @@
+from Classes import *
 from Functions import *
-run = True
 
-while run:
-    run = False
+Main()

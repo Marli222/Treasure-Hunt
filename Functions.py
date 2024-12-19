@@ -3,15 +3,9 @@ import time
 from Classes import *
 import readchar
 
-def Save(player1):
-    save = open("Savefile",'w')
-    save.write(f"{player1.name}\n{player1.hp}\n{player1.lvl}\n{player1.exp}") #Finish writing this...
 def NewGame():
-    player1 = Stats('',10,1,0,100,1,Tut,[],0,'','','',[],'',[],10)
+    player1 = Stats(Tut,10,1,0,100,1,'',[],0,'','','',[],'',["Amb1"],10)
     Tutorial(player1,Tut)
-def LoadGame():
-    player1 = Stats()
-    GameLoop()
 
 def Tutorial(player,Tut):
     Type("[???]: Welcome! Hopefully you're not too dizzy?")
@@ -51,5 +45,4 @@ def GameLoop():
     run = True
     while run:
         pass
-
 Main()
