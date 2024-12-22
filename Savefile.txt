@@ -1,1 +1,1 @@
-Tut¬10¬1¬0¬100¬1¬Lay¬["Fist"]¬0¬¬¬¬[]¬¬["Amb1"]¬10
+Tut¬10¬1¬0¬100¬1¬Kyomi¬["Fist", "Fire Amulet", "Tiny Knife"]¬0¬3¬<Classes.Weapons object at 0x7d3d020b1fa0>¬¬[]¬¬["Amb1", "Fire", "Help2"]¬10

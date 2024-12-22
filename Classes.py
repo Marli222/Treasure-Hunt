@@ -14,7 +14,10 @@ def Save(player1):
         player1.location = 'Tut'
     elif player1.location == MainCity:
         player1.location = 'MainCity'
-    save.write(f"{player1.location}¬{player1.hp}¬{player1.lvl}¬{player1.exp}¬{player1.Rexp}¬{player1.atk}¬{player1.name}¬{player1.inv}¬{player1.gold}¬{player1.wpatk}¬{player1.beat}¬{player1.target}¬{player1.compq}¬{player1.curq}¬{player1.cuts}¬{player1.maxhp}")
+    list1 = json.dumps(player1.inv) 
+    list2 = json.dumps(player1.compq)
+    list3 = json.dumps(player1.cuts)
+    save.write(f"{player1.location}¬{player1.hp}¬{player1.lvl}¬{player1.exp}¬{player1.Rexp}¬{player1.atk}¬{player1.name}¬{list1}¬{player1.gold}¬{player1.wpatk}¬{player1.beat}¬{player1.target}¬{list2}¬{player1.curq}¬{list3}¬{player1.maxhp}")
     save.readline
     Type("Saved!")
 
@@ -51,31 +54,34 @@ def Type(message):
     print('')
 
 def Fight(y,x,player,target,all):
-    print(target.hp)
     a = random.randint(0,6)
     if a > 0:
-        if player.beat.name == '':
+        if player.beat == '':
             Type("[Tutorial]: You need to equip a weapon to fight. Click q..")
+            return
         if player.beat.name == 'Fire Amulet': #All magic items will be here.
-            if player.beat.char < 0:
+            if player.beat.char <= 0:
                 Type("There are no more charges left...")
                 if 'Help1' not in player.cuts:
                     Type("[Tutorial]: There are no more charges of this weapon.")
                     Type("[Tutorial]: Click q to use your fists, they never run out of charge...")
-                    player.cuts.append('Help1')
+                    player.cuts.append("Help1")
                 a = 0
             else:
                 Type(f"You used 1 charge of {player.beat.name}.")
-                print(f"{target.name} is about to meet a magical demise!")
                 a = player.beat.atk * a + player.atk
+                print(f"{target.name} is about to meet a magical demise! {player.name} dealt {a} damage!")
                 player.beat.char -= 1
         if player.beat.name == 'Fist':
-            a = player.atk + a
-            print(f"You punched {target.name}!")
+            a = player.atk + player.wpatk
+            print(f"You punched {target.name}! {player.name} dealt {a} damage!")
+        elif player.beat.name == 'Tiny Knife':
+            a = player.atk + player.wpatk
+            print(f"You stabbed {target.name}! {player.name} dealt {a} damage!")
     else:
         print(f"{target.name} dodged your attack.")
     target.hp -= a
-    if target.hp < 0:
+    if target.hp <= 0:
         print(f"{player.name} has defeated {target.name}!")
         all.remove(target.name)
         player.location.mapper[y][x] = '.'
@@ -95,13 +101,13 @@ def Attack(player,mob):
     else:
         pass
 
-
-
 class Weapons:
     def __init__(item, name, atk,charges):
         item.name = name
         item.atk = atk
         item.char = charges
+# Magic Weapons
+Fire = Weapons('Fire Amulet',3,2)
 
 class Goblin:
     def __init__(mob,name):
@@ -111,7 +117,6 @@ class Goblin:
         mob.exp = 5
         mob.gold = 2
         mob.ran = [0,3]
-
 
 class Slime:
     def __init__(mob,name):
@@ -141,12 +146,13 @@ class Stats:
      self.cuts = cuts #List of cutscenes the player has seen
      self.maxhp = maxhp
                   
-    def Combat(self,Enemies):
+    def Combat(self,Enemies,emap,fmap):
         Combat = Combat_Area('Combat',[['~','~','~','~','~'],
         ['~','.','.','.','~'],
         ['~','.','.','.','~'],
         ['~','.','.','.','~'],
-        ['~','~','~','~','~']],'.',1,3,{'Goblin1':'$','Goblin2':'#','Goblin3':'%','Fire Slime':'*','$':Fight},{'$':'Goblin1','#':'Goblin2','%':'Goblin3'})
+        ['~','~','~','~','~']],'.',1,3,emap,fmap) 
+        #for emap and fmap - $ mob1 ; # mob2 ; % mob3 
         self.location = Combat
         y = 0
         x = 3
@@ -183,7 +189,6 @@ class Stats:
                 try: 
                     wp = items[int(item)]
                     if wp == "Fire Amulet":
-                        Fire = Weapons('Fire Amulet',3,2)
                         Type(f"You have equipped the Fire Amulet! It has {Fire.char} charges left.")
                         self.beat = Fire
                         self.wpatk = Fire.atk
@@ -191,6 +196,11 @@ class Stats:
                         Fist = Weapons('Fist',self.atk,'')
                         Type(f"You've clenched your fists!")
                         self.beat = Fist
+                    elif wp == "Tiny Knife":
+                        Knife = Weapons('Tiny Knife',2,'')
+                        Type("You unseathed the small knife.")
+                        self.beat = Knife
+                        self.wpatk = Knife.atk
                 except:
                     print("You don't have that item.")
             elif key == "w":
@@ -301,10 +311,19 @@ class Stats:
         for x in At:
             gold += x.gold * random.randint(x.ran[0],x.ran[1])
             exp += x.exp * random.randint(x.ran[0],x.ran[1])
-        Type("You have gained {gold} gold pieces and {exp} exprience points!")
+        Type(f"You have gained {gold} gold pieces and {exp} exprience points!")
+        # Cutscenes after combat:
         if 'Help2' not in self.cuts:
             Type(f"[Tutorial]: Press z to check your status and inventory!")
-            Type(f"This is especially useful to see how much exp you need to level up!")   
+            Type(f"[Tutorial]: This is especially useful to see how much exp you need to level up!")
+            self.cuts.append("Help2")
+        if 'Gob' not in self.cuts:
+            Type(f"You see the Goblin had dropped a small knife.")
+            Type(f"Take it? (y/n)")
+            key = readchar.readkey()
+            if key == 'y':
+                Type("You have obtained the tiny knife...")
+                self.inv.append("Tiny Knife")
         self.gold += gold   
         self.exp += exp
         self.location = last_loc
@@ -313,6 +332,19 @@ class Stats:
         while True:
             key = readchar.readkey()
             self.location.mapper[self.location.l_y][self.location.l_x] = self.location.Last1
+            if key == 'e':
+                pass
+            if key == 'z':
+                Type(f"{self.name} - at the {self.location}")
+                Type(f"Hp: {self.hp}")
+                Type(f"Lvl: {self.lvl}")
+                Type(f"{self.Rexp} exp is required to level up!")
+                Type(f"Gold: {self.gold}")
+                if self.curq == '':
+                    Type(f"{self.name} is currently not doing any quests.")
+                else:
+                    Type(f"{self.name} is currently doing {self.curq} quest.")
+
             if key == 'q':
                 Type("What item would you like to use?")
                 for o,i in enumerate(self.inv):
@@ -323,24 +355,26 @@ class Stats:
                     print(items[int(item)])
                 except:
                     print("You don't have that item.")
-            elif key == "p":
+            if key == "p":
                 os.system('clear')
                 Type("Saving....")
                 Save(self)
                 quit()
-            elif key == "w":
+            if key == "w":
                 self.location.py_y -= 1
                 if self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                     self.location.py_y += 1
                     continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "|":
                     info = self.location.emap['|']
-                    if 'Gob' in self.cuts:
-                        self.location = info
-                    else:
+                    if 'Gob' not in self.cuts:
                         Tut_Fight(self)
                         self.location.py_y += 1
                         break
+                    elif 'Amb2' not in self.cuts:
+                        Amb2(self)
+                    else:
+                        self.location = info
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "&": 
                     info = self.location.emap['&']
                     info(self.location,self)
@@ -450,7 +484,7 @@ class Combat_Area(Area):
         for row in self.mapper:
             print(' '.join(map(str, row)))
         x = ', '.join(player.inv)
-        print(f'HP: {player.hp} ITEMS: {x}')
+        print(f'HP: {player.hp}ITEMS: {x}')
 
 def Tut_Fight(player):
     os.system('clear')
@@ -460,15 +494,15 @@ def Tut_Fight(player):
         ["#","#","#","#","#"]]
     for row in commap:
             print(' '.join(map(str, row)))
-    Type(f'[Goblin]: KEKEKEKKEKEKKEKE - A defenceless vistor! Easy pickings!!')
-    Type(f'[Ambrosia]: Is that a goblin? Quick use this!')
+    Type(f'[Goblin]: $£&£% $%&$!£%$& £$%@#')
+    Type(f'[Ambrosia]: Is that a stray goblin? Quick use this!')
     Type('You obtained a Fire amulet!')
     player.inv.append("Fire Amulet")
     Type(f"[Tutorial]: {player.name}, click q to use the fire amulet.")
     global last_loc
     last_loc = Tut
-    player.Combat(["Goblin1","Goblin2","Goblin3"])
-    player.cuts.append('Gob')
+    player.Combat(["Goblin1"],{'Goblin1':'$','$':Fight},{'$':'Goblin1'})
+    player.cuts.append("Gob")
     player.location.Update()
     player.Actions()
     
@@ -488,7 +522,7 @@ def Amb(loc,player):
             Type(f'[Ambrosia]: Anyways, I\'ll take you to the main city! We\'re just waiting on another vistor.')
             Type(f'[Ambrosia]: If you want to start walking the pathway is down and to your right.')
             Type(f'[Tutorial]: Walk through the | to reach the city.')
-            player.cuts.append('Fire')
+            player.cuts.append("Fire")
         else:
             Type(f'[Ambrosia]: Oh. I must sound stupid...')
             Type(f'[Ambrosia]: Anyways, I\'ll take you to the main city. We\'re just waiting on another vistor.')
@@ -498,8 +532,57 @@ def Amb(loc,player):
         Type(f'[Ambrosia]: I am flattered you want to talk with me but I\'m going to be waiting here.\n[Ambrosia]: Start walking and I\'ll catch up with you later on.')
         Type(f'[Tutorial]: Walk through the | to reach the city.')
     
-    #loc.mapper[1][3] = '.'
-    #loc.Update()
+def Amb2(player):
+    Type(f'[Ambrosia]: Wow! I thought I might need to help but you are a natural with that amulet!')
+    Type(f'[Ambrosia]: I suggest that you write about that Goblin in your notes app.')
+    Type(f"[Tutorial]: Make sure to click 'p' outside of combat to save your progress.")
+    Type(f'[Ambrosia]: It\'s easier to defeat summons if you know what you are up against.')
+    Type(f"Ask about summons? (y/n)")
+    key = readchar.readkey()
+    if key == 'y':
+        Type(f"[{player.name}]: Summons? What are those?")
+        Type(f'[Ambrosia]: My apologies, I assumed you knew what I meant.\n[Ambrosia]: Summons are creatures the Guardians bring to this plane to protect the ruins.')
+        Type(f"Ask about ruins? (y/n)")
+        key = readchar.readkey()
+        if key == 'y':
+            Type(f"[{player.name}]: The ruins? Ruins of what?")
+            Type(f'[Ambrosia]: That my dear vistor is not something outsiders should know about.\n[Ambrosia]: However seeing as I did put you in harms way I\'ll let you choose.')
+            Type(f"[Ambrosia]: I\'ll let you keep the Fire amulet and even recharge it. Or I can tell you a bit about the ruins?")
+            Type(f"Ruins or Amulet? (r/a)")
+            if key == 'r':
+                Type(f"[Ambrosia]: Ok, {player.name} you seem to very interested in our history. More so then magic, haha!")
+                Type("[Ambrosia]: I guess that why you were picked to come and visit our floating island. Or previously floating...")
+                Type("[Ambrosia]: The ruins are the old temples bulit by my ancestors to worship our gods.\n[Ambrosia]: Now, there are used as storage for powerful magic items as they corrupt the land around them.")
+                Type("[Ambrosia]: Interesting, right?")
+            else:
+                Type(f"[Ambrosia]: Ah, {player.name} you've got a taste for magic huh?")
+                a = random.randint(2,5)
+                Type(f"[Ambrosia]: I'll give you {a} more charges! I'm sure you can use those gold pieces you got from that Goblin to get more charges..")
+                Fire.char += a
+                Type(f"{Fire.name} now has {Fire.char} charges!")
+                player.cuts.append("Recharge")
+    if 'Recharge' not in player.cuts:
+        Type(f"[Ambrosia]: Could I have my amulet back now?")
+        Type(f"Give back Amulet? (y/n)")
+        key = readchar.readkey()
+        if key == 'y':
+            Type(f"[{player.name}]: Sure, here.")
+            Type(f"[Ambrosia]: No it's ok. That was a test - and you passed!")
+            if 'Fire' in player.cuts:
+                a = random.randint(2,5)
+                Type(f"[Ambrosia]: Here, I'll give you {a} more charges! I'm happy, you're not one of those magic hungry, Ruin Hunters...")
+                Fire.char += a
+                Type(f"{Fire.name} now has {Fire.char} charges!")
+            Type(f"[Ambrosia]: I think our other vistor may have not made it to the teleporting spot - I need to go assist them! I'll catch up later!")
+        else:
+            Type(f"[{player.name}]: No.")
+            Type(f"[Ambrosia]: That's a joke right?")
+            Type(f"[{player.name}]: ...")
+            time.sleep(2)
+            Type(f"[Ambrosia]: I see.")
+    player.location[1][3] = '.'
+    player.location.Update()
+    player.cuts.append("Amb2")
 
 MainCity = Area("Main City",[["#","#","#","#","#"],
         ["#",".",".",".","#"],
