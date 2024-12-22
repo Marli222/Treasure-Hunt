@@ -53,19 +53,26 @@ def Type(message):
 def Fight(y,x,player,target,all):
     print(target.hp)
     a = random.randint(0,6)
-    print(f"You attacked {target.name} for {a} points")
+    if a > 0:
+        if player.beat.name == 'Fire Amulet':
+            if player.beat.charge == 0:
+                Type("There are no more charges left...")
+            else:
+                Type("You used 1 charge of {player.beat.name}.")
+        print(f"You attacked {target.name} for {a} points")
     target.hp -= a
     if target.hp < 0:
         print(f"{player.name} has defeated {target.name}!")
         all.remove(target.name)
         player.location.mapper[y][x] = '.'
     print(target.hp)
+    player.location.Update()
 
 class Weapons:
     def __init__(item, name, atk,charges):
         item.name = name
         item.atk = atk
-        item.charges
+        item.char = charges
 
 class Goblin:
     def __init__(mob,name):
@@ -139,7 +146,11 @@ class Stats:
                 item = input("Enter the number. > ")
                 try: 
                     wp = items[int(item)]
-                    Type(f"You have equipped the {wp}!")
+                    if wp == "Fire Amulet":
+                        Fire = Weapons('Fire Amulet',3,2)
+                        Type("You have equipped the Fire Amulet! It has {Fire.charges} charges left.")
+                        self.beat = Fire
+                        self.wpatk = Fire.atk
                 except:
                     print("You don't have that item.")
             elif key == "w":
