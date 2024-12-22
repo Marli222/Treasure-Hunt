@@ -54,19 +54,48 @@ def Fight(y,x,player,target,all):
     print(target.hp)
     a = random.randint(0,6)
     if a > 0:
-        if player.beat.name == 'Fire Amulet':
-            if player.beat.charge == 0:
+        if player.beat.name == '':
+            Type("[Tutorial]: You need to equip a weapon to fight. Click q..")
+        if player.beat.name == 'Fire Amulet': #All magic items will be here.
+            if player.beat.char < 0:
                 Type("There are no more charges left...")
+                if 'Help1' not in player.cuts:
+                    Type("[Tutorial]: There are no more charges of this weapon.")
+                    Type("[Tutorial]: Click q to use your fists, they never run out of charge...")
+                    player.cuts.append('Help1')
+                a = 0
             else:
-                Type("You used 1 charge of {player.beat.name}.")
-        print(f"You attacked {target.name} for {a} points")
+                Type(f"You used 1 charge of {player.beat.name}.")
+                print(f"{target.name} is about to meet a magical demise!")
+                a = player.beat.atk * a + player.atk
+                player.beat.char -= 1
+        if player.beat.name == 'Fist':
+            a = player.atk + a
+            print(f"You punched {target.name}!")
+    else:
+        print(f"{target.name} dodged your attack.")
     target.hp -= a
     if target.hp < 0:
         print(f"{player.name} has defeated {target.name}!")
         all.remove(target.name)
         player.location.mapper[y][x] = '.'
-    print(target.hp)
-    player.location.Update()
+
+def Attack(player,mob):
+    if mob.hp > 0:
+        a = random.randint(mob.ran[0],mob.ran[1])
+        if a > 1:
+            b = random.randint(0,6) * mob.atk
+            print(f"{mob.name} attacked you for {b} points.")
+            player.hp -= b
+        else:
+            print(f"{player.name} dodged the attack!")
+        if player.hp < 0:
+            print(f"You have been defeated....")
+            quit()
+    else:
+        pass
+
+
 
 class Weapons:
     def __init__(item, name, atk,charges):
@@ -81,6 +110,7 @@ class Goblin:
         mob.atk = 1
         mob.exp = 5
         mob.gold = 2
+        mob.ran = [0,3]
 
 
 class Slime:
@@ -90,6 +120,7 @@ class Slime:
         mob.atk = 1
         mob.exp = 7
         mob.gold = 3
+        mob.ran = [0,4]
 
 class Stats:
     def __init__(self, location, hp, lvl, exp, Rexp, atk, name, inv, gold, wp, beat, target, compq, curq, cuts, maxhp): #compq is completed quests and curq is current quest.
@@ -119,6 +150,9 @@ class Stats:
         self.location = Combat
         y = 0
         x = 3
+        At = []
+        gold = 0
+        exp = 0
         for q,i in enumerate(Enemies):
             if q < 4:
                 y += 1
@@ -129,16 +163,18 @@ class Stats:
                 Combat.mapper[y][x] = Combat.emap[i]
             if i == 'Goblin1':
                 Gob1 = Goblin('Goblin1')
+                At.append(Gob1)
             elif i == 'Goblin2':
                 Gob2 = Goblin('Goblin2')
+                At.append(Gob2)
             elif i == 'Goblin3':
                 Gob3 = Goblin('Goblin3')
+                At.append(Gob3)
         Combat.Update(self)
         while Enemies != []:
             self.location.mapper[self.location.l_y][self.location.l_x] = self.location.Last1
             key = readchar.readkey()
             if key == 'q':
-                Enemies = []
                 Type("What item would you like to use?")
                 for o,i in enumerate(self.inv):
                     print(f"{o} - {i}")
@@ -148,9 +184,13 @@ class Stats:
                     wp = items[int(item)]
                     if wp == "Fire Amulet":
                         Fire = Weapons('Fire Amulet',3,2)
-                        Type("You have equipped the Fire Amulet! It has {Fire.charges} charges left.")
+                        Type(f"You have equipped the Fire Amulet! It has {Fire.char} charges left.")
                         self.beat = Fire
                         self.wpatk = Fire.atk
+                    elif wp == "Fist":
+                        Fist = Weapons('Fist',self.atk,'')
+                        Type(f"You've clenched your fists!")
+                        self.beat = Fist
                 except:
                     print("You don't have that item.")
             elif key == "w":
@@ -161,12 +201,17 @@ class Stats:
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "$" or self.location.mapper[self.location.py_y][self.location.py_x] == "#" or self.location.mapper[self.location.py_y][self.location.py_x] == "%": 
                     info = self.location.emap['$']
                     if self.location.mapper[self.location.py_y][self.location.py_x] == "$":
-                        if self.location.fmap['$'] == 'Goblin1':
+                        if self.location.fmap['$'] == 'Goblin1': #Add more elif statements for different mobs mapped to $ smbyol
                             info(self.location.py_y,self.location.py_x,self,Gob1,Enemies)
+                            Attack(self,Gob1)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
-                        info(self.location,self,'#')
+                        if self.location.fmap['#'] == 'Goblin2':
+                            info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
+                            Attack(self,Gob2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
-                        info(self.location,self,'%')
+                        if self.location.fmap['%'] == 'Goblin3':
+                            info(self.location.py_y,self.location.py_x,self,Gob3,Enemies)
+                            Attack(self,Gob3)
                     self.location.py_y += 1
                     continue
                 else:
@@ -179,15 +224,20 @@ class Stats:
                 if self.location.mapper[self.location.py_y][self.location.py_x] == "~":
                     self.location.py_y -= 1
                     continue
-                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$" or self.location.mapper[self.location.py_y][self.location.py_x] == "#" or self.location.mapper[self.location.py_y][self.location.py_x] == "%":
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$" or self.location.mapper[self.location.py_y][self.location.py_x] == "#" or self.location.mapper[self.location.py_y][self.location.py_x] == "%": 
                     info = self.location.emap['$']
                     if self.location.mapper[self.location.py_y][self.location.py_x] == "$":
-                        if self.location.fmap['$'] == 'Goblin1':
+                        if self.location.fmap['$'] == 'Goblin1': #Add more elif statements for different mobs mapped to $ smbyol
                             info(self.location.py_y,self.location.py_x,self,Gob1,Enemies)
+                            Attack(self,Gob1)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
-                        info(self.location,self,'#')
+                        if self.location.fmap['#'] == 'Goblin2':
+                            info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
+                            Attack(self,Gob2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
-                        info(self.location,self,'%')
+                        if self.location.fmap['%'] == 'Goblin3':
+                            info(self.location.py_y,self.location.py_x,self,Gob3,Enemies)
+                            Attack(self,Gob3)
                     self.location.py_y -= 1
                     continue
                 else:
@@ -200,15 +250,20 @@ class Stats:
                 if self.location.mapper[self.location.py_y][self.location.py_x] == "~":
                     self.location.py_x += 1
                     continue
-                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$" or self.location.mapper[self.location.py_y][self.location.py_x] == "#" or self.location.mapper[self.location.py_y][self.location.py_x] == "%":
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$" or self.location.mapper[self.location.py_y][self.location.py_x] == "#" or self.location.mapper[self.location.py_y][self.location.py_x] == "%": 
                     info = self.location.emap['$']
                     if self.location.mapper[self.location.py_y][self.location.py_x] == "$":
-                        if self.location.fmap['$'] == 'Goblin1':
+                        if self.location.fmap['$'] == 'Goblin1': #Add more elif statements for different mobs mapped to $ smbyol
                             info(self.location.py_y,self.location.py_x,self,Gob1,Enemies)
+                            Attack(self,Gob1)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
-                        info(self.location,self,'#')
+                        if self.location.fmap['#'] == 'Goblin2':
+                            info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
+                            Attack(self,Gob2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
-                        info(self.location,self,'%')
+                        if self.location.fmap['%'] == 'Goblin3':
+                            info(self.location.py_y,self.location.py_x,self,Gob3,Enemies)
+                            Attack(self,Gob3)
                     self.location.py_x += 1
                     continue
                 else:
@@ -221,15 +276,20 @@ class Stats:
                 if self.location.mapper[self.location.py_y][self.location.py_x] == "~":
                     self.location.py_x -= 1
                     continue
-                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$" or self.location.mapper[self.location.py_y][self.location.py_x] == "#" or self.location.mapper[self.location.py_y][self.location.py_x] == "%":
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$" or self.location.mapper[self.location.py_y][self.location.py_x] == "#" or self.location.mapper[self.location.py_y][self.location.py_x] == "%": 
                     info = self.location.emap['$']
                     if self.location.mapper[self.location.py_y][self.location.py_x] == "$":
-                        if self.location.fmap['$'] == 'Goblin1':
+                        if self.location.fmap['$'] == 'Goblin1': #Add more elif statements for different mobs mapped to $ smbyol
                             info(self.location.py_y,self.location.py_x,self,Gob1,Enemies)
+                            Attack(self,Gob1)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
-                        info(self.location,self,'#')
+                        if self.location.fmap['#'] == 'Goblin2':
+                            info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
+                            Attack(self,Gob2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
-                        info(self.location,self,'%')
+                        if self.location.fmap['%'] == 'Goblin3':
+                            info(self.location.py_y,self.location.py_x,self,Gob3,Enemies)
+                            Attack(self,Gob3)
                     self.location.py_x -= 1
                     continue
                 else:
@@ -238,8 +298,16 @@ class Stats:
                     self.location.l_x = self.location.py_x
                     self.location.mapper[self.location.py_y][self.location.py_x] = '@'
             self.location.Update(self)  
+        for x in At:
+            gold += x.gold * random.randint(x.ran[0],x.ran[1])
+            exp += x.exp * random.randint(x.ran[0],x.ran[1])
+        Type("You have gained {gold} gold pieces and {exp} exprience points!")
+        if 'Help2' not in self.cuts:
+            Type(f"[Tutorial]: Press z to check your status and inventory!")
+            Type(f"This is especially useful to see how much exp you need to level up!")   
+        self.gold += gold   
+        self.exp += exp
         self.location = last_loc
-                
 
     def Actions(self):
         while True:
@@ -381,7 +449,7 @@ class Combat_Area(Area):
         os.system('clear')
         for row in self.mapper:
             print(' '.join(map(str, row)))
-        x = ','.join(player.inv)
+        x = ', '.join(player.inv)
         print(f'HP: {player.hp} ITEMS: {x}')
 
 def Tut_Fight(player):
@@ -400,6 +468,8 @@ def Tut_Fight(player):
     global last_loc
     last_loc = Tut
     player.Combat(["Goblin1","Goblin2","Goblin3"])
+    player.cuts.append('Gob')
+    player.location.Update()
     player.Actions()
     
 
