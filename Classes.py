@@ -8,6 +8,40 @@ import random
 def convert(astr):
     return json.loads(astr)
 
+def MaxHp(player):
+    if player.hp > player.maxhp:
+        if player.lvl == 1:
+            player.hp = 10
+        elif player.lvl == 2:
+            player.hp = 20
+        elif player.lvl == 3:
+            player.hp = 35
+        elif player.lvl == 4:
+            player.hp = 50
+        elif player.lvl == 5:
+            player.hp = 70
+        elif player.lvl == 6:
+            player.hp = 175
+        elif player.lvl == 7:
+            player.hp = 200
+        elif player.lvl == 8:
+            player.hp = 250
+        elif player.lvl == 9:
+            player.hp = 300
+        elif player.lvl == 10:
+            player.hp = 400
+
+def Exp(player):
+    if player.exp < 100:
+        player.lvl = 1
+        player.Rexp = 100 - player.exp
+    elif player.exp > 100 and player.exp < 500:
+        player.lvl = 2
+        player.Rexp = 500 - player.exp
+    elif player.exp > 500 and player.exp < 1000:
+        player.lvl = 3
+        player.Rexp = 1000 - player.exp
+
 def Save(player1):
     save = open("Savefile.txt",'w')
     if player1.location == Tut:
@@ -19,6 +53,10 @@ def Save(player1):
     list3 = json.dumps(player1.cuts)
     save.write(f"{player1.location}¬{player1.hp}¬{player1.lvl}¬{player1.exp}¬{player1.Rexp}¬{player1.atk}¬{player1.name}¬{list1}¬{player1.gold}¬{player1.wpatk}¬{player1.beat}¬{player1.target}¬{list2}¬{player1.curq}¬{list3}¬{player1.maxhp}")
     save.readline
+    save.close()
+    smap = open("Savemap,txt",'w')
+    Map1 = json.dumps(Tut.mapper)
+    smap.write(Map1)
     Type("Saved!")
 
 def LoadGame():
@@ -43,6 +81,10 @@ def LoadGame():
         loc[14] = convert(loc[14])
         
     player1 = Stats(loc[0],int(loc[1]),int(loc[2]),int(loc[3]),int(loc[4]),int(loc[5]),loc[6],loc[7],int(loc[8]),loc[9],loc[10],loc[11],loc[12],loc[13],loc[14],int(loc[15]))
+    load.close()
+    load2 = open("Savemap,txt",'r')
+    loc2 = load2.readline()
+    Tut.mapper = convert(loc2)
     player1.location.Update()
     player1.Actions()
 
@@ -116,7 +158,7 @@ class Goblin:
         mob.atk = 1
         mob.exp = 5
         mob.gold = 2
-        mob.ran = [0,3]
+        mob.ran = [1,3]
 
 class Slime:
     def __init__(mob,name):
@@ -125,7 +167,7 @@ class Slime:
         mob.atk = 1
         mob.exp = 7
         mob.gold = 3
-        mob.ran = [0,4]
+        mob.ran = [1,4]
 
 class Stats:
     def __init__(self, location, hp, lvl, exp, Rexp, atk, name, inv, gold, wp, beat, target, compq, curq, cuts, maxhp): #compq is completed quests and curq is current quest.
@@ -192,15 +234,18 @@ class Stats:
                         Type(f"You have equipped the Fire Amulet! It has {Fire.char} charges left.")
                         self.beat = Fire
                         self.wpatk = Fire.atk
+                        time.sleep(1)
                     elif wp == "Fist":
                         Fist = Weapons('Fist',self.atk,'')
                         Type(f"You've clenched your fists!")
                         self.beat = Fist
+                        time.sleep(1)
                     elif wp == "Tiny Knife":
                         Knife = Weapons('Tiny Knife',2,'')
                         Type("You unseathed the small knife.")
                         self.beat = Knife
                         self.wpatk = Knife.atk
+                        time.sleep(1)
                 except:
                     print("You don't have that item.")
             elif key == "w":
@@ -327,6 +372,8 @@ class Stats:
         self.gold += gold   
         self.exp += exp
         self.location = last_loc
+        Exp(self)
+        MaxHp(self)
 
     def Actions(self):
         while True:
@@ -335,7 +382,9 @@ class Stats:
             if key == 'e':
                 pass
             if key == 'z':
-                Type(f"{self.name} - at the {self.location}")
+                MaxHp(self)
+                Exp(self)
+                Type(f"{self.name} - at the {self.location.name}")
                 Type(f"Hp: {self.hp}")
                 Type(f"Lvl: {self.lvl}")
                 Type(f"{self.Rexp} exp is required to level up!")
@@ -344,6 +393,7 @@ class Stats:
                     Type(f"{self.name} is currently not doing any quests.")
                 else:
                     Type(f"{self.name} is currently doing {self.curq} quest.")
+                input("Click enter to continue...")
 
             if key == 'q':
                 Type("What item would you like to use?")
@@ -377,7 +427,7 @@ class Stats:
                         self.location = info
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "&": 
                     info = self.location.emap['&']
-                    info(self.location,self)
+                    info(self)
                     self.location.py_y += 1
                     continue
                 else:
@@ -392,15 +442,17 @@ class Stats:
                     continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "|":
                     info = self.location.emap['|']
-                    if 'Gob' in self.cuts:
-                        self.location = info
-                    else:
+                    if 'Gob' not in self.cuts:
                         Tut_Fight(self)
                         self.location.py_y -= 1
                         break
+                    elif 'Amb2' not in self.cuts:
+                        Amb2(self)
+                    else:
+                        self.location = info
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "&": 
                     info = self.location.emap['&']
-                    info(self.location,self)
+                    info(self)
                     self.location.py_y -= 1
                     continue
                 else:
@@ -415,15 +467,17 @@ class Stats:
                     continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "|": 
                     info = self.location.emap['|']
-                    if 'Gob' in self.cuts:
-                        self.location = info
-                    else:
+                    if 'Gob' not in self.cuts:
                         Tut_Fight(self)
                         self.location.py_x += 1
                         break
+                    elif 'Amb2' not in self.cuts:
+                        Amb2(self)
+                    else:
+                        self.location = info
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "&": 
                     info = self.location.emap['&']
-                    info(self.location,self)
+                    info(self)
                     self.location.py_x += 1
                     continue
                 else:
@@ -438,15 +492,47 @@ class Stats:
                     continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "|":
                     info = self.location.emap['|']
-                    if 'Gob' in self.cuts:
-                        self.location = info
-                    else:
+                    if 'Gob' not in self.cuts:
                         Tut_Fight(self)
                         self.location.py_x -= 1
                         break
+                    elif 'Amb2' not in self.cuts:
+                        Amb2(self)
+                    else:
+                        self.location = info
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "&": 
                     info = self.location.emap['&']
-                    info(self.location,self)
+                    info(self)
+                    self.location.py_x -= 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "£": 
+                    info = self.location.emap['£']
+                    info(self)
+                    self.location.py_x -= 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$": 
+                    info = self.location.emap['$']
+                    info(self)
+                    self.location.py_x -= 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "%": 
+                    info = self.location.emap['%']
+                    info(self)
+                    self.location.py_x -= 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "^": 
+                    info = self.location.emap['^']
+                    info(self)
+                    self.location.py_x -= 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "_": 
+                    info = self.location.emap['_']
+                    info(self)
+                    self.location.py_x -= 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "-": 
+                    info = self.location.emap['-']
+                    info(self)
                     self.location.py_x -= 1
                     continue
                 else:
@@ -484,7 +570,11 @@ class Combat_Area(Area):
         for row in self.mapper:
             print(' '.join(map(str, row)))
         x = ', '.join(player.inv)
-        print(f'HP: {player.hp}ITEMS: {x}')
+        if player.beat == '':
+            v = 'None'
+        else:
+            v = player.beat.name
+        print(f'HP: {player.hp}\nEQUIPPED WEAPON: {v}\nITEMS: {x}')
 
 def Tut_Fight(player):
     os.system('clear')
@@ -507,7 +597,7 @@ def Tut_Fight(player):
     player.Actions()
     
 
-def Amb(loc,player):
+def Amb(player):
     if "Amb1" not in player.cuts:
         Type(f'[Ambrosia]: Hi, My name is Ambrosia! I\'ll be your guide around Javara!')
         Type(f'[Ambrosia]: It\'s lovely to meet you {player.name}')
@@ -533,7 +623,7 @@ def Amb(loc,player):
         Type(f'[Tutorial]: Walk through the | to reach the city.')
     
 def Amb2(player):
-    Type(f'[Ambrosia]: Wow! I thought I might need to help but you are a natural with that amulet!')
+    Type(f'[Ambrosia]: Wow! I thought I might of needed to help you but you are a natural with that amulet!')
     Type(f'[Ambrosia]: I suggest that you write about that Goblin in your notes app.')
     Type(f"[Tutorial]: Make sure to click 'p' outside of combat to save your progress.")
     Type(f'[Ambrosia]: It\'s easier to defeat summons if you know what you are up against.')
@@ -580,19 +670,37 @@ def Amb2(player):
             Type(f"[{player.name}]: ...")
             time.sleep(2)
             Type(f"[Ambrosia]: I see.")
-    player.location[1][3] = '.'
+            player.curq = 'Ruin Hunter'
+    player.location.mapper[1][3] = '.'
     player.location.Update()
     player.cuts.append("Amb2")
 
-MainCity = Area("Main City",[["#","#","#","#","#"],
-        ["#",".",".",".","#"],
-        ["|",".",".",".","#"],
-        ["#","#","#","#","#"]],'.',1,1,{'|':'','&':'Ambrosia'})
+def Guard(player):
+    pass
+
+def Weapons_Shop(player):
+    pass
+
+def Magic_Shop(player):
+    pass
+
+def Shady_Merchant(player):
+    pass
+
+def Potion_Geek(player):
+    pass
+
+MainCity = Area("Main City",[["#","_","#","^","#","-","#","#"],
+        ["#",".",".",".",".",".",".","#"],
+        ["#",".","£","~","~","%",".","#"],
+        ["#",".","$","~","~","!",".","#"],
+        ["|",".",".",".",".",".","&","}"],
+        ["#","#","#","#","#","#","#","#"]],'.',1,1,{'|':'','&':'Ambrosia'}) #£ - Weapons Shop $ - Magic Shop ! - Scanveger merchant /Ruin Hunter in disigue (Ruin Hunter Quest or tells you to get lost) % - Loves potions and the how the herbs on this island have magical effects
 Tut = Area("Dock",[["#","#","#","#","#"],
         ["#",".",".","&","#"],
         ["#",".",".",".","|"],
         ["#","#","#","#","#"]],'.',1,1,{'|':MainCity,'&':Amb})
-MainCity.emap = {'|':Tut,'&':'Ambrosia'}
+MainCity.emap = {'|':Tut,'&':Guard,'£':Weapons_Shop,'$':Magic_Shop,'!':Shady_Merchant,'%':Potion_Geek}
 
 '''
 player1 = Stats('',10,1,0,100,1,Tut,[],0,'','','',[],'',['Gob'],10)
