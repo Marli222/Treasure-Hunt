@@ -1,1 +1,1 @@
-TutÂ¬5Â¬1Â¬15Â¬85Â¬1Â¬kokÂ¬["Fist", "Fire Amulet", "Tiny Knife"]Â¬6Â¬3Â¬<Classes.Weapons object at 0x745f4f7fccb0>Â¬Â¬[]Â¬Â¬["Help2", "Gob", "Recharge", "Amb2"]Â¬10
+Tut¬10¬1¬10¬90¬1¬Kin¬["Fist", "Fire Amulet", "Tiny Knife"]¬2¬3¬¬¬[]¬["Ruin Hunter"]¬["Help2", "Gob", "Amb1", "Amb2"]¬10

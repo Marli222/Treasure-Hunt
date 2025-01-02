@@ -4,7 +4,7 @@ from Classes import *
 import readchar
 
 def NewGame():
-    player1 = Stats(Tut,10,1,0,100,1,'',["Fist"],0,'','','',[],'',[],10)
+    player1 = Stats(Tut,10,1,0,100,1,0,["Fist"],0,'','','',[],[],[],10)
     Tutorial(player1,Tut)
 
 def Tutorial(player,Tut):

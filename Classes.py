@@ -51,12 +51,15 @@ def Save(player1):
     list1 = json.dumps(player1.inv) 
     list2 = json.dumps(player1.compq)
     list3 = json.dumps(player1.cuts)
-    save.write(f"{player1.location}¬{player1.hp}¬{player1.lvl}¬{player1.exp}¬{player1.Rexp}¬{player1.atk}¬{player1.name}¬{list1}¬{player1.gold}¬{player1.wpatk}¬{player1.beat}¬{player1.target}¬{list2}¬{player1.curq}¬{list3}¬{player1.maxhp}")
+    list4 = json.dumps(player1.curq)
+    save.write(f"{player1.location}¬{player1.hp}¬{player1.lvl}¬{player1.exp}¬{player1.Rexp}¬{player1.atk}¬{player1.name}¬{list1}¬{player1.gold}¬{player1.wpatk}¬{player1.beat}¬{player1.target}¬{list2}¬{list4}¬{list3}¬{player1.maxhp}")
     save.readline
     save.close()
     smap = open("Savemap,txt",'w')
     Map1 = json.dumps(Tut.mapper)
-    smap.write(Map1)
+    Map2 = json.dumps(MainCity.mapper)
+    smap.write(f"{Map1}¬{Map2}")
+    smap.close()
     Type("Saved!")
 
 def LoadGame():
@@ -75,6 +78,10 @@ def LoadGame():
         loc[12] = []
     else:
         loc[12] = convert(loc[12])
+    if loc[13] == '[]':
+        loc[13] = []
+    else:
+        loc[13] = convert(loc[13])
     if loc[14] == '[]':
         loc[14] = []
     else:
@@ -83,8 +90,9 @@ def LoadGame():
     player1 = Stats(loc[0],int(loc[1]),int(loc[2]),int(loc[3]),int(loc[4]),int(loc[5]),loc[6],loc[7],int(loc[8]),loc[9],loc[10],loc[11],loc[12],loc[13],loc[14],int(loc[15]))
     load.close()
     load2 = open("Savemap,txt",'r')
-    loc2 = load2.readline()
-    Tut.mapper = convert(loc2)
+    loc2 = (load2.readline()).split("¬")
+    Tut.mapper = convert(loc2[0])
+    MainCity.mapper = convert(loc2[1])
     player1.location.Update()
     player1.Actions()
 
@@ -143,6 +151,9 @@ def Attack(player,mob):
     else:
         pass
 
+def Randomise(player):
+    Type("your mother")
+
 class Weapons:
     def __init__(item, name, atk,charges):
         item.name = name
@@ -168,6 +179,15 @@ class Slime:
         mob.exp = 7
         mob.gold = 3
         mob.ran = [1,4]
+
+class GuardE: #Change stats for game balancing later
+    def __init__(mob,name):
+        mob.name = name
+        mob.hp = 100
+        mob.atk = 10
+        mob.exp = 7
+        mob.gold = 3
+        mob.ran = [1,10]
 
 class Stats:
     def __init__(self, location, hp, lvl, exp, Rexp, atk, name, inv, gold, wp, beat, target, compq, curq, cuts, maxhp): #compq is completed quests and curq is current quest.
@@ -218,6 +238,9 @@ class Stats:
             elif i == 'Goblin3':
                 Gob3 = Goblin('Goblin3')
                 At.append(Gob3)
+            elif i == 'Guard':
+                Guard1 = GuardE('Guard')
+                At.append(Guard1)
         Combat.Update(self)
         while Enemies != []:
             self.location.mapper[self.location.l_y][self.location.l_x] = self.location.Last1
@@ -239,6 +262,7 @@ class Stats:
                         Fist = Weapons('Fist',self.atk,'')
                         Type(f"You've clenched your fists!")
                         self.beat = Fist
+                        self.wpatk = Fist.atk
                         time.sleep(1)
                     elif wp == "Tiny Knife":
                         Knife = Weapons('Tiny Knife',2,'')
@@ -259,6 +283,9 @@ class Stats:
                         if self.location.fmap['$'] == 'Goblin1': #Add more elif statements for different mobs mapped to $ smbyol
                             info(self.location.py_y,self.location.py_x,self,Gob1,Enemies)
                             Attack(self,Gob1)
+                        elif self.location.fmap['$'] == 'Guard':
+                            info(self.location.py_y,self.location.py_x,self,Guard1,Enemies)
+                            Attack(self,Guard1)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                         if self.location.fmap['#'] == 'Goblin2':
                             info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
@@ -285,6 +312,9 @@ class Stats:
                         if self.location.fmap['$'] == 'Goblin1': #Add more elif statements for different mobs mapped to $ smbyol
                             info(self.location.py_y,self.location.py_x,self,Gob1,Enemies)
                             Attack(self,Gob1)
+                        elif self.location.fmap['$'] == 'Guard':
+                            info(self.location.py_y,self.location.py_x,self,Guard1,Enemies)
+                            Attack(self,Guard1)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                         if self.location.fmap['#'] == 'Goblin2':
                             info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
@@ -311,6 +341,9 @@ class Stats:
                         if self.location.fmap['$'] == 'Goblin1': #Add more elif statements for different mobs mapped to $ smbyol
                             info(self.location.py_y,self.location.py_x,self,Gob1,Enemies)
                             Attack(self,Gob1)
+                        elif self.location.fmap['$'] == 'Guard':
+                            info(self.location.py_y,self.location.py_x,self,Guard1,Enemies)
+                            Attack(self,Guard1)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                         if self.location.fmap['#'] == 'Goblin2':
                             info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
@@ -337,6 +370,9 @@ class Stats:
                         if self.location.fmap['$'] == 'Goblin1': #Add more elif statements for different mobs mapped to $ smbyol
                             info(self.location.py_y,self.location.py_x,self,Gob1,Enemies)
                             Attack(self,Gob1)
+                        elif self.location.fmap['$'] == 'Guard':
+                            info(self.location.py_y,self.location.py_x,self,Guard1,Enemies)
+                            Attack(self,Guard1)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                         if self.location.fmap['#'] == 'Goblin2':
                             info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
@@ -357,6 +393,7 @@ class Stats:
             gold += x.gold * random.randint(x.ran[0],x.ran[1])
             exp += x.exp * random.randint(x.ran[0],x.ran[1])
         Type(f"You have gained {gold} gold pieces and {exp} exprience points!")
+        self.beat = ''
         # Cutscenes after combat:
         if 'Help2' not in self.cuts:
             Type(f"[Tutorial]: Press z to check your status and inventory!")
@@ -369,6 +406,10 @@ class Stats:
             if key == 'y':
                 Type("You have obtained the tiny knife...")
                 self.inv.append("Tiny Knife")
+        if 'Defeated Guard' in self.cuts:
+            Type(f"[Guard]: You? Defeated me? May you have mercy on our small island of Javara.")
+            Type(f"[Guard]: We did not intend to fall onto your magicless land. Alas one of our own sabatagoted us.")
+            MainCity.mapper[5][6] = '.'
         self.gold += gold   
         self.exp += exp
         self.location = last_loc
@@ -380,7 +421,10 @@ class Stats:
             key = readchar.readkey()
             self.location.mapper[self.location.l_y][self.location.l_x] = self.location.Last1
             if key == 'e':
-                pass
+                if self.location.Last1 == '~':
+                    Randomise(self)
+                else:
+                    Type("There is nothing to see here...")
             if key == 'z':
                 MaxHp(self)
                 Exp(self)
@@ -394,7 +438,6 @@ class Stats:
                 else:
                     Type(f"{self.name} is currently doing {self.curq} quest.")
                 input("Click enter to continue...")
-
             if key == 'q':
                 Type("What item would you like to use?")
                 for o,i in enumerate(self.inv):
@@ -406,7 +449,7 @@ class Stats:
                 except:
                     print("You don't have that item.")
             if key == "p":
-                os.system('clear')
+                os.system('cls')
                 Type("Saving....")
                 Save(self)
                 quit()
@@ -520,6 +563,11 @@ class Stats:
                     info(self)
                     self.location.py_x -= 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "!": 
+                    info = self.location.emap['!']
+                    info(self)
+                    self.location.py_x -= 1
+                    continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "^": 
                     info = self.location.emap['^']
                     info(self)
@@ -556,7 +604,7 @@ class Area:
         zone.emap = emap
 
     def Update(zone):
-        os.system('clear')
+        os.system('cls')
         for row in zone.mapper:
             print(' '.join(map(str, row)))
 
@@ -566,7 +614,7 @@ class Combat_Area(Area):
         zone.fmap = fmap
 
     def Update(self,player):
-        os.system('clear')
+        os.system('cls')
         for row in self.mapper:
             print(' '.join(map(str, row)))
         x = ', '.join(player.inv)
@@ -577,7 +625,7 @@ class Combat_Area(Area):
         print(f'HP: {player.hp}\nEQUIPPED WEAPON: {v}\nITEMS: {x}')
 
 def Tut_Fight(player):
-    os.system('clear')
+    os.system('cls')
     commap = [["#","#","#","#","#"],
         ["#",".",".","&","#"],
         ["#",".","@","$","|"],
@@ -594,8 +642,7 @@ def Tut_Fight(player):
     player.Combat(["Goblin1"],{'Goblin1':'$','$':Fight},{'$':'Goblin1'})
     player.cuts.append("Gob")
     player.location.Update()
-    player.Actions()
-    
+    player.Actions()    
 
 def Amb(player):
     if "Amb1" not in player.cuts:
@@ -642,7 +689,7 @@ def Amb2(player):
             if key == 'r':
                 Type(f"[Ambrosia]: Ok, {player.name} you seem to very interested in our history. More so then magic, haha!")
                 Type("[Ambrosia]: I guess that why you were picked to come and visit our floating island. Or previously floating...")
-                Type("[Ambrosia]: The ruins are the old temples bulit by my ancestors to worship our gods.\n[Ambrosia]: Now, there are used as storage for powerful magic items as they corrupt the land around them.")
+                Type("[Ambrosia]: The ruins are the old temples bulit by my ancestors to worship our gods.\n[Ambrosia]: Now, they are used as storage for powerful magic items as they corrupt the land around them.")
                 Type("[Ambrosia]: Interesting, right?")
             else:
                 Type(f"[Ambrosia]: Ah, {player.name} you've got a taste for magic huh?")
@@ -670,24 +717,35 @@ def Amb2(player):
             Type(f"[{player.name}]: ...")
             time.sleep(2)
             Type(f"[Ambrosia]: I see.")
-            player.curq = 'Ruin Hunter'
+            player.curq.append('Ruin Hunter')
+            Type("New Quest Started!\n>>>The Disguised Ruin Hunter<<<")
     player.location.mapper[1][3] = '.'
     player.location.Update()
     player.cuts.append("Amb2")
 
 def Guard(player):
-    pass
+    Type(f"[Guard]: Where do you think you are going? Vistors are not allowed past here.")
+    Type("Attack the Guard? (y/n)")
+    key = readchar.readkey()
+    if key == 'y':
+        player.cuts.append("Defeated Guard")
+        Type(f"[{player.name}]: If you won't get out of my way, I'll guess I'll get past by force!")
+        player.Combat(['Guard'],{'Guard':'$','$':Fight},{'$':'Guard'})
+    else:
+        Type(f"[{player.name}]: Oh. Sorry, I'll leave.")
 
-def Weapons_Shop(player):
-    pass
+
+def Weapons_Shop(player): #
+    if 'Wep' not in player.cuts:
+        pass
 
 def Magic_Shop(player):
     pass
 
-def Shady_Merchant(player):
+def Shady_Merchant(player):#
     pass
 
-def Potion_Geek(player):
+def Potion_Geek(player):#
     pass
 
 MainCity = Area("Main City",[["#","_","#","^","#","-","#","#"],
@@ -695,7 +753,7 @@ MainCity = Area("Main City",[["#","_","#","^","#","-","#","#"],
         ["#",".","£","~","~","%",".","#"],
         ["#",".","$","~","~","!",".","#"],
         ["|",".",".",".",".",".","&","}"],
-        ["#","#","#","#","#","#","#","#"]],'.',1,1,{'|':'','&':'Ambrosia'}) #£ - Weapons Shop $ - Magic Shop ! - Scanveger merchant /Ruin Hunter in disigue (Ruin Hunter Quest or tells you to get lost) % - Loves potions and the how the herbs on this island have magical effects
+        ["#","#","#","#","#","#","#","#"]],'.',1,4,{'|':'','&':'Ambrosia'}) #£ - Weapons Shop $ - Magic Shop ! - Scanveger merchant /Ruin Hunter in disigue (Ruin Hunter Quest or tells you to get lost) % - Loves potions and the how the herbs on this island have magical effects
 Tut = Area("Dock",[["#","#","#","#","#"],
         ["#",".",".","&","#"],
         ["#",".",".",".","|"],
