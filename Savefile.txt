@@ -1,1 +1,1 @@
-Tut¬10¬1¬10¬90¬1¬Kin¬["Fist", "Fire Amulet", "Tiny Knife"]¬2¬3¬¬¬[]¬["Ruin Hunter"]¬["Help2", "Gob", "Amb1", "Amb2"]¬10
+MainCity¬10¬1¬10¬90¬1¬Kin¬["Fist", "Fire Amulet", "Tiny Knife"]¬2¬3¬¬¬[]¬["Ruin Hunter"]¬["Help2", "Gob", "Amb1", "Amb2", "Wep"]¬10

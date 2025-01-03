@@ -154,6 +154,10 @@ def Attack(player,mob):
 def Randomise(player):
     Type("your mother")
 
+class Shop:
+    def __init__(shop,stock,stockmapper):
+        shop.stock = stock
+        shop.mapper = stockmapper
 class Weapons:
     def __init__(item, name, atk,charges):
         item.name = name
@@ -161,7 +165,9 @@ class Weapons:
         item.char = charges
 # Magic Weapons
 Fire = Weapons('Fire Amulet',3,2)
-
+Ice = Weapons('Ice Amulet',5,0)
+Cool = Weapons('Cool Amulet',10,0)
+Hot = Weapons('Hot Amulet',15,0)
 class Goblin:
     def __init__(mob,name):
         mob.name = name
@@ -734,12 +740,316 @@ def Guard(player):
     else:
         Type(f"[{player.name}]: Oh. Sorry, I'll leave.")
 
+Harley = Shop(['Sword','Dagger','Axe'],{'Sword':30,'Dagger':10,'Axe':50})
 
-def Weapons_Shop(player): #
+def Weapons_Shop(player): # Harley
     if 'Wep' not in player.cuts:
-        pass
+        Type(f"[???]: Oh! Welcome vistor, its nice to see a new face around here.")
+        Type(f"[Harley]: My name is Harley, and you are?")
+        Type(f"[{player.name}]: I'm {player.name}.")
+        Type(f"[Harley]: Well, {player.name} if you need anything to protect yourself, I've got weapons!")
+        Type("[Harley]: I'm even developing a gun-styled magic weapon, inspired by your land!") 
+        Type("[Harley]: It's not finished yet unfortunately...")
+        Type("Ask about magic weapons? (y/n)")
+        key = readchar.readkey()
+        if key == 'y':
+            Type(f"[{player.name}]: You make magic weapons?")
+            Type("[Harley]: Yep! I even recharge them too - but you'll need to get the materials yourself.")
+            Type("[Harley]: I need to run the shop after all...")
+            Type("Ask about materials? (y/n)")
+            key = readchar.readkey()
+            if key == 'y':
+                Type(f"[{player.name}]: Can't you buy the materials?")
+                Type(f"[Harley]: Well usually I would buy materials from Dhara, but ever since the Fall. I don't trust him...")
+                Type("Ask about the Fall? (y/n)")
+                key = readchar.readkey()
+                if key == 'y':
+                    Type(f"[{player.name}]: What's the Fall?")
+                    Type("[Harley]: You don't know? I thought a vistor like you would be caught up on recent news in your land?")
+                    Type("[Harley]: This Island used to float in the sky above your land's ocean. Now it doesn't. That was the Fall.")
+                    Type("Ask for a better explaination. (y/n)")
+                    key = readchar.readkey()
+                    if key == 'y':
+                        Type(f"[{player.name}]: Could I have a better explaination? Like what exactly caused you to fall?")
+                        Type("[Harley]: ...")
+                        time.sleep(2)
+                        Type("[Harley]: Are you buying something or not?")
 
-def Magic_Shop(player):
+
+        player.cuts.append('Wep')
+    if 'Solve' not in player.curq and player.lvl > 2 and 'Solve' not in player.cuts:
+        Type(f"[Harley]: Hello, {player.name}. The Guardian of the Mylva temple has set an interesting puzzle at the entrance of the temple!")
+        Type(f"[Harley]: Apparently, the puzzle is based on the Tenja Temple and it is SO HARD to solve. Could you solve it?")
+        Type("[Harley]: Mind, you have to go to the temple to confirm you are correct.")
+        Type("Accept? (y/n)")
+        key = readchar.readkey()
+        if key == 'y':
+            Type(f"[Harley]: Great! Come back and tell me once you've solved it. I just want to the know the solution!")
+            player.curq.append("Solve")
+            Type("NEW QUEST!")
+            Type(">>>The Puzzle of the Mylva Temple<<<")
+        else:
+            Type(f"[Harley]: That's ok, it is a very difficult puzzle after all.")
+        player.cuts.append('Solve')
+    if 'Solved' in player.compq and 'Solved' not in player.cuts:
+        Type(f"[{player.name}]: So the solution was actually this...")
+        Type(f"[Harley]: Interesting well thank you.")
+        player.cuts.apppend('Solved')
+        Type("QUEST COMPLETED!")
+    Type("[Harley]: So do you want to look at my assortment of weapons? Or do you need some magic? (w/r/c)")
+    key = readchar.readkey()
+    if key == 'w':
+        Type("[Harley]: These is all my weapons!")
+        for x,i in enumerate(Harley.stock):
+            print(f"{x} - {i} costs {Harley.mapper[i]} Gold")
+        Type("[Harley]: Which would you like?")
+        num = int(input("Enter the Number. > "))
+        try:
+            a = player.gold - Harley.mapper[Harley.stock[num]]
+            if a < 0:
+                Type("[Harley]: You're short. Come back when you have enough gold.")
+            else:
+                player.gold = a
+                player.inv.append(Harley.stock[num])
+                Harley.stock.remove(Harley.stock[num])
+        except:
+            Type("[Harley]: That item is not for sale...")
+    elif key == 'r':
+        Type("[Harley]: You want a recharge? I'll need the gem of the amulet and some Gold to do it.")
+        Type("[Harley]: Show me the one you want to recharge.")
+        list = ['Fire Amulet','Ice Amulet','Cool Amulet','Hot amulet']
+        for i,x in enumerate(list):
+            print(f"{i} - {x}")
+        num = int(input("Enter the Number. > "))
+        try:
+            a = list[num]
+            if a == 'Fire Amulet':
+                if 'Fire Amulet' not in player.inv or 'Fire Gem' not in player.inv:
+                    Type("[Harley]: You don't have the required materials.")
+                else:
+                    Type("[Harley]: How many recharges? They cost 10 Gold each.")
+                    num = int(input("Enter the Number. > ")) * 10
+                    if num < player.gold:
+                        Type("[Harley]: You're short. Come back when you have enough gold.")
+                    else:
+                        Fire.char += num/10
+                        player.inv.remove("Fire Gem")
+                        player.gold -= num
+                        Type(f"[Harley]: I'm Done! You now have {Fire.char} charges.")
+            elif a == 'Ice Amulet':
+                if 'Ice Amulet' not in player.inv or 'Ice Gem' not in player.inv:
+                    Type("[Harley]: You don't have the required materials.")
+                else:
+                    Type("[Harley]: How many recharges? They cost 15 Gold each.")
+                    num = int(input("Enter the Number. > ")) * 15
+                    if num < player.gold:
+                        Type("[Harley]: You're short. Come back when you have enough gold.")
+                    else:
+                        Ice.char += num/15
+                        player.inv.remove("Ice Gem")
+                        player.gold -= num
+                        Type(f"[Harley]: I'm Done! You now have {Ice.char} charges.")
+            elif a == 'Cool Amulet':
+                if 'Cool Amulet' not in player.inv or 'Cool Gem' not in player.inv:
+                    Type("[Harley]: You don't have the required materials.")
+                else:
+                    Type("[Harley]: How many recharges? They cost 20 Gold each.")
+                    num = int(input("Enter the Number. > ")) * 20
+                    if num < player.gold:
+                        Type("[Harley]: You're short. Come back when you have enough gold.")
+                    else:
+                        player.gold -= num
+                        Cool.char += num/20
+                        player.inv.remove("Cool Gem")
+                        Type(f"[Harley]: I'm Done! You now have {Cool.char} charges.")
+            elif a == 'Hot Amulet':
+                if 'Hot Amulet' not in player.inv or 'Refined Clear Gem' not in player.inv:
+                    Type("[Harley]: You don't have the required materials.")
+                else:
+                    Type("[Harley]: How many recharges? They cost 25 Gold each.")
+                    num = int(input("Enter the Number. > ")) * 25
+                    if num < player.gold:
+                        Type("[Harley]: You're short. Come back when you have enough gold.")
+                    else:
+                        player.gold -= num
+                        Cool.char += num/25
+                        player.inv.remove("Hot Gem")
+                        Type(f"[Harley]: I'm Done! You now have {Hot.char} charges.")
+        except:
+            Type("[Harley]: Hahahaha. That's not an amulet.")
+    elif key == 'c':
+        Type(f"[Harley]: So you want me to craft something, {player.name}? What base material have you brought for me?")
+        list = ['Sword','Dagger','Axe','Fire Gem','Ice Gem','Cool Gem','Clear Gem','Refined Clear Gem']
+        for i,x in enumerate(list):
+            print(f"{i} - {x}")
+        num = int(input("Enter the Number. > "))
+        try:
+            a = list[num]
+            if a == 'Sword':
+                if 'Sword' not in player.inv or 'Clear Gem' not in player.inv:
+                    Type("[Harley]: You don't have the required materials.")
+                else:
+                    Type("[Harley]: I've got an idea! I could enhance this sword with a gem! I require 5 Gold. (y/n)")
+                    key = readchar.readkey()
+                    if key == 'y':
+                        num = 5
+                        Type("[Harley]: Let me cook.")
+                        if num < player.gold:
+                            Type("[Harley]: You're short. Come back when you have enough gold.")
+                        else:
+                            player.inv.append('Enhanced Sword')
+                            player.inv.remove('Sword')
+                            player.inv.remove("Clear Gem")
+                            player.gold -= num
+                            Type(f"[Harley]: I'm Done! You now have a Enhanced Sword!")
+                    else:
+                        Type("[Harley]: You are missing out. Oh well.")
+            elif a == 'Dagger':
+                if 'Dagger' not in player.inv or 'Clear Gem' not in player.inv:
+                    Type("[Harley]: You don't have the required materials.")
+                else:
+                    Type("[Harley]: I've got an idea! I could enhance this dagger with a gem! I require 5 Gold. (y/n)")
+                    key = readchar.readkey()
+                    if key == 'y':
+                        num = 5
+                        Type("[Harley]: Let me cook.")
+                        if num < player.gold:
+                            Type("[Harley]: You're short. Come back when you have enough gold.")
+                        else:
+                            player.inv.append('Enhanced Dagger')
+                            player.inv.remove('Dagger')
+                            player.inv.remove("Clear Gem")
+                            player.gold -= num
+                            Type(f"[Harley]: I'm Done! You now have a Enhanced Dagger!")
+                    else:
+                        Type("[Harley]: You are missing out. Oh well.")                   
+            elif a == 'Axe':
+                if 'Axe' not in player.inv or 'Clear Gem' not in player.inv:
+                    Type("[Harley]: You don't have the required materials.")
+                else:
+                    Type("[Harley]: I've got an idea! I could enhance this dagger with a gem! I require 10 Gold. (y/n)")
+                    key = readchar.readkey()
+                    if key == 'y':
+                        num = 5
+                        Type("[Harley]: Let me cook.")
+                        if num < player.gold:
+                            Type("[Harley]: You're short. Come back when you have enough gold.")
+                        else:
+                            player.inv.append('Enhanced Axe')
+                            player.inv.remove('Axe')
+                            player.inv.remove("Clear Gem")
+                            player.gold -= num
+                            Type(f"[Harley]: I'm Done! You now have a Enhanced Axe!")
+                    else:
+                        Type("[Harley]: You are missing out. Oh well.")                  
+            elif a == 'Fire Gem':
+                if 'Fire Gem' not in player.inv or 'Clear Gem' not in player.inv:
+                    Type("[Harley]: You don't have the required materials.")
+                else:
+                    Type("[Harley]: Boring... I have to make another fire amulet? It costs 5 gold by the way. (y/n)")
+                    key = readchar.readkey()
+                    if key == 'y':
+                        num = 5
+                        Type("[Harley]: This is too easy.")
+                        if num < player.gold:
+                            Type("[Harley]: You're short. Come back when you have enough gold.")
+                        else:
+                            player.inv.append('Fire Amulet')
+                            player.inv.remove('Fire Gem')
+                            player.inv.remove("Clear Gem")
+                            player.gold -= num
+                            Type(f"[Harley]: Here you go. Another Amulet.")
+                    else:
+                        Type("[Harley]: Oh! You want me to make something else?")     
+            elif a == 'Ice Gem':
+                if 'Ice Gem' not in player.inv or 'Clear Gem' not in player.inv:
+                    Type("[Harley]: You don't have the required materials.")
+                else:
+                    Type("[Harley]: Boring... I have to make another ice amulet? It cost five gold by the way. (y/n)")
+                    key = readchar.readkey()
+                    if key == 'y':
+                        num = 5
+                        Type("[Harley]: This is too easy.")
+                        if num < player.gold:
+                            Type("[Harley]: You're short. Come back when you have enough gold.")
+                        else:
+                            player.inv.append('Ice Amulet')
+                            player.inv.remove('Ice Gem')
+                            player.inv.remove("Clear Gem")
+                            player.gold -= num
+                            Type(f"[Harley]: Here you go. Another Amulet.")
+                    else:
+                        Type("[Harley]: Oh! You want me to make something else?")
+            elif a == 'Cool Gem':
+                if 'Cool Gem' not in player.inv or 'Clear Gem' not in player.inv:
+                    Type("[Harley]: You don't have the required materials.")
+                else:
+                    Type("[Harley]: Boring... I have to make another cool amulet? It cost 5 gold by the way (y/n)")
+                    key = readchar.readkey()
+                    if key == 'y':
+                        num = 5
+                        Type("[Harley]: This is too easy.")
+                        if num < player.gold:
+                            Type("[Harley]: You're short. Come back when you have enough gold.")
+                        else:
+                            player.inv.append('Cool Amulet')
+                            player.inv.remove('Cool Gem')
+                            player.inv.remove("Clear Gem")
+                            player.gold -= num
+                            Type(f"[Harley]: Here you go. Another Amulet.")
+                    else:
+                        Type("[Harley]: Oh! You want me to make something else?")
+            elif a == 'Clear Gem':
+                if 'Clear Gem' not in player.inv:
+                    Type("[Harley]: You don't have the required materials.")
+                else:
+                    Type("[Harley]: Hmm I has never thought as using this a base material... I'll see what I can do. For 5 gold though. (y/n)")
+                    key = readchar.readkey()
+                    if key == 'y':
+                        num = 5
+                        Type("[Harley]: I'm excited to try this out!")
+                        if num < player.gold:
+                            Type("[Harley]: You're short. Come back when you have enough gold.")
+                        else:
+                            player.inv.remove("Clear Gem")
+                            player.gold -= num
+                            Type(f"[Harley]: Sorry it didn't work. Maybe if the Clear Gem was more pure? And I had a fiery addtion.")
+                    else:
+                        Type("[Harley]: Really? Don't worry I'll try it in my own time.")
+            elif a == 'Refined Clear Gem':
+                if 'Refined Clear Gem' not in player.inv or 'Fire Gem' not in player.inv:
+                    Type("[Harley]: You don't have the required materials.")
+                else:
+                    Type("[Harley]: Nice! You've got just what I needed! If this works I'll give you a charge free of charge! Hahaha! (y/n)")
+                    Type("[Harley]: Still costs 5 gold though...")
+                    key = readchar.readkey()
+                    if key == 'y':
+                        num = 5
+                        Type("[Harley]: I've got this! It should work now.")
+                        if num < player.gold:
+                            Type("[Harley]: You're short. Come back when you have enough gold.")
+                        else:
+                            player.inv.append('Hot Amulet')
+                            player.inv.remove('Fire Gem')
+                            player.inv.remove("Refined Clear Gem")
+                            player.gold -= num
+                            Type(f"[Harley]: I did it! And the power radiating off this Amulet... It's simlar to the levitation gem...")
+                            Type(f"Ask about Leviation Gem? (y/n)")
+                            key = readchar.readkey()
+                            if key == 'y':
+                                Type(f"[{player.name}]: Levitation gem? Is that what caused this island to float?")
+                                Type(f"[Harley]: You heard nothing. Vistors should not know about that...")
+                    else:
+                        Type("[Harley]: I even said I would give you a free charge?")
+        except:
+            Type("[Harley]: I can't craft anything with that.")
+            
+
+
+
+
+
+def Conversion(player): # 
     pass
 
 def Shady_Merchant(player):#
@@ -758,7 +1068,7 @@ Tut = Area("Dock",[["#","#","#","#","#"],
         ["#",".",".","&","#"],
         ["#",".",".",".","|"],
         ["#","#","#","#","#"]],'.',1,1,{'|':MainCity,'&':Amb})
-MainCity.emap = {'|':Tut,'&':Guard,'£':Weapons_Shop,'$':Magic_Shop,'!':Shady_Merchant,'%':Potion_Geek}
+MainCity.emap = {'|':Tut,'&':Guard,'£':Weapons_Shop,'$':Conversion,'!':Shady_Merchant,'%':Potion_Geek}
 
 '''
 player1 = Stats('',10,1,0,100,1,Tut,[],0,'','','',[],'',['Gob'],10)
