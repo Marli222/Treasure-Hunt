@@ -5,6 +5,8 @@ import time
 import json
 import random
 
+dollar_count = 0
+
 def convert(astr):
     return json.loads(astr)
 
@@ -60,6 +62,9 @@ def Save(player1):
     Map2 = json.dumps(MainCity.mapper)
     smap.write(f"{Map1}¬{Map2}")
     smap.close()
+    schar = open("Savechar.txt",'w')
+    schar.write(f"{Fire.char}¬{Ice.char}¬{Cool.char}¬{Hot.char}")
+    schar.close()
     Type("Saved!")
 
 def LoadGame():
@@ -93,6 +98,12 @@ def LoadGame():
     loc2 = (load2.readline()).split("¬")
     Tut.mapper = convert(loc2[0])
     MainCity.mapper = convert(loc2[1])
+    load3 = open("Savechar.txt",'r')
+    loc3 = (load3.readline()).split("¬")
+    Fire.char = int(loc3[0])
+    Ice.char = int(loc3[1])
+    Cool.char = int(loc3[2])
+    Hot.char = int(loc3[3]) #FIX THISSSSS
     player1.location.Update()
     player1.Actions()
 
@@ -431,14 +442,23 @@ class Stats:
                     Randomise(self)
                 else:
                     Type("There is nothing to see here...")
+            if key == 'o':
+                a = input("Hp - int > ")
+                b = input("Inv - list > ").split(',')
+                c = input("Gold - int > ")
+                d = input("Lvl - int > ")
+                self.SetStats(int(a),b,int(c),int(d))
             if key == 'z':
-                MaxHp(self)
                 Exp(self)
+                MaxHp(self)
                 Type(f"{self.name} - at the {self.location.name}")
                 Type(f"Hp: {self.hp}")
                 Type(f"Lvl: {self.lvl}")
                 Type(f"{self.Rexp} exp is required to level up!")
                 Type(f"Gold: {self.gold}")
+                Type(f"Back Capacity: {len(self.inv)}/30")
+                print("Currently has these items:")
+                print(self.inv)
                 if self.curq == '':
                     Type(f"{self.name} is currently not doing any quests.")
                 else:
@@ -595,6 +615,11 @@ class Stats:
                     self.location.l_x = self.location.py_x
                     self.location.mapper[self.location.py_y][self.location.py_x] = '@'
             self.location.Update()
+    def SetStats(self,hp,inv,gold,lvl):
+        self.hp = hp
+        self.inv = inv
+        self.gold = gold
+        self.lvl = lvl
 
 class Area:
     def __init__(zone,name,map1,start,x,y,emap):
@@ -761,6 +786,7 @@ def Weapons_Shop(player): # Harley
             if key == 'y':
                 Type(f"[{player.name}]: Can't you buy the materials?")
                 Type(f"[Harley]: Well usually I would buy materials from Dhara, but ever since the Fall. I don't trust him...")
+                player.cuts.append("Wep2")
                 Type("Ask about the Fall? (y/n)")
                 key = readchar.readkey()
                 if key == 'y':
@@ -812,6 +838,7 @@ def Weapons_Shop(player): # Harley
                 player.gold = a
                 player.inv.append(Harley.stock[num])
                 Harley.stock.remove(Harley.stock[num])
+                Type("[Harley]: Hope you like it!")
         except:
             Type("[Harley]: That item is not for sale...")
     elif key == 'r':
@@ -829,10 +856,10 @@ def Weapons_Shop(player): # Harley
                 else:
                     Type("[Harley]: How many recharges? They cost 10 Gold each.")
                     num = int(input("Enter the Number. > ")) * 10
-                    if num < player.gold:
+                    if num > player.gold:
                         Type("[Harley]: You're short. Come back when you have enough gold.")
                     else:
-                        Fire.char += num/10
+                        Fire.char += num//10
                         player.inv.remove("Fire Gem")
                         player.gold -= num
                         Type(f"[Harley]: I'm Done! You now have {Fire.char} charges.")
@@ -842,10 +869,10 @@ def Weapons_Shop(player): # Harley
                 else:
                     Type("[Harley]: How many recharges? They cost 15 Gold each.")
                     num = int(input("Enter the Number. > ")) * 15
-                    if num < player.gold:
+                    if num > player.gold:
                         Type("[Harley]: You're short. Come back when you have enough gold.")
                     else:
-                        Ice.char += num/15
+                        Ice.char += num//15
                         player.inv.remove("Ice Gem")
                         player.gold -= num
                         Type(f"[Harley]: I'm Done! You now have {Ice.char} charges.")
@@ -855,11 +882,11 @@ def Weapons_Shop(player): # Harley
                 else:
                     Type("[Harley]: How many recharges? They cost 20 Gold each.")
                     num = int(input("Enter the Number. > ")) * 20
-                    if num < player.gold:
+                    if num > player.gold:
                         Type("[Harley]: You're short. Come back when you have enough gold.")
                     else:
                         player.gold -= num
-                        Cool.char += num/20
+                        Cool.char += num//20
                         player.inv.remove("Cool Gem")
                         Type(f"[Harley]: I'm Done! You now have {Cool.char} charges.")
             elif a == 'Hot Amulet':
@@ -868,11 +895,11 @@ def Weapons_Shop(player): # Harley
                 else:
                     Type("[Harley]: How many recharges? They cost 25 Gold each.")
                     num = int(input("Enter the Number. > ")) * 25
-                    if num < player.gold:
+                    if num > player.gold:
                         Type("[Harley]: You're short. Come back when you have enough gold.")
                     else:
                         player.gold -= num
-                        Cool.char += num/25
+                        Hot.char += num//25
                         player.inv.remove("Hot Gem")
                         Type(f"[Harley]: I'm Done! You now have {Hot.char} charges.")
         except:
@@ -1044,13 +1071,60 @@ def Weapons_Shop(player): # Harley
         except:
             Type("[Harley]: I can't craft anything with that.")
             
-
-
-
-
-
-def Conversion(player): # 
-    pass
+Dhara = Shop(['Fire Amulet','Ice Amulet','Cool Amulet','Hot Amulet','Clear Gem','Refined Clear Gem','Fire Gem','Ice Gem','Cool Gem','Gold'],{'Fire Amulet':30,'Ice Amulet':50,'Cool Amulet':70,'Hot Amulet':100,'Clear Gem':1,'Refined Clear Gem':5,'Fire Gem':10,'Ice Gem':15,'Cool Gem':20,'Gold':1})
+def Conversion(player): #Dhara
+    if 'Con' not in player.cuts:
+        Type(f"[???]: Great! A new customer - Welcome {player.name} to Javara!")
+        Type(f"[{player.name}]: How do you know my name?")
+        Type(f"[???]: Well, I'm the one who helps to organise who comes into Javara from your land.")
+        Type(f"[Dhara]: My name is Dhara - the assistant ambassador for Javara.")
+        Type("[Dhara]: I'm your contact to your land whilst you are here. And I'll even exchange things you aquire here for dollars.") 
+        Type("[Dhara]: Lots of Dollars.")
+        Type("Ask about the exchange? (y/n)")
+        key = readchar.readkey()
+        if key == 'y':
+            Type(f"[{player.name}]: What kind of things do you exchange?")
+            Type("[Dhara]: Amulets, Gems, Gold. Anything valuable - I don't exchange useless items.")
+            Type("[Dhara]: Stuff like that you can sell to Marina instead.")
+        if 'Wep2' in player.cuts:   
+            Type("Ask about Harley distrusting him? (y/n)")
+            key = readchar.readkey()
+            if key == 'y':
+                Type(f"[{player.name}]: How come Harley thinks you're responsible for the Fall?")
+                Type(f"[Dhara]: Wow. You are quite... Blunt. Alas, you are a potential customer so I'll answer your question.")
+                Type("[Dhara]: I was one of the first to make contact with your people and I stand to profit from all of you vistors.")
+                Type("[Dhara]: Objectively, I seem like the most likely subject. I may be a business man but I do have standards.")
+                Type("Ask who Dhara thinks caused the Fall? (y/n)")
+                key = readchar.readkey()
+                if key == 'y':
+                    Type(f"[{player.name}]: Who do you think caused it then.")
+                    Type("[Dhara]: I don't think my opinon on this matter is necessary.")
+                    Type("[Dhara]]: Yet. The Ruin Hunters have grown in number and power after the Fall.")
+                    Type("[Dhara]: Just a little tip for my future customer.")
+        player.cuts.append('Con')
+    Type("[Dhara]: So do you want to convert your items? The exchange rate is 1 Gold to $1,000 (y/n)")
+    key = readchar.readkey()
+    if key == 'y':
+        Type("[Dhara]: Select an item! The prices are set as seen, no-one else here does exchanges.")
+        for x,i in enumerate(Dhara.stock):
+            print(f"{x} - {i} for {Dhara.mapper[i]} Gold")
+        num = int(input("Enter the Number. > "))
+        #try:
+        if Dhara.stock[num] == 'Gold':
+            Type("[Dhara]: How much gold do you want to exchange?")
+            num = int(input("Enter the Number. > "))
+            if num <= player.gold:
+                player.gold -= num
+                dollar_count += num * 1000
+                Type(f"[Dhara]: Here, I've transferred the money. In total I've given you ${dollar_count}.")
+            else:
+                Type("[Dhara]: Don't try and cheat me. It's a waste of time.")
+        else:
+            dollar_count += Dhara.mapper[Dhara.stock[num]]*1000
+            Type(f"[Dhara]: Ah, a {Dhara.stock[num]}. I'll transfer {Dhara.mapper[Dhara.stock[num]]*1000} for this.")
+            Type(f"[Dhara]: In total I have transferred ${dollar_count} to you. It was a pleasure doing business with you.")
+        #except:
+            #Type("[Dhara]: I don't exchange those types of items...")
 
 def Shady_Merchant(player):#
     pass
