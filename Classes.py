@@ -6,6 +6,27 @@ import json
 import random
 
 dollar_count = 0
+def Check_Full(player,item):
+    if player.inv == 30:
+        Type(f"[Tutorial]: Your inventory is full. Would you like to replace {item.name} with another item? (y/n)")
+        if 'Help3' not in player.cuts:
+                    Type("[Tutorial]: Be careful if you drop an item you can never get it back.")
+                    Type("[Tutorial]: You can sell random items to Marina instead?")
+                    player.cuts.append("Help3")
+        key = readchar.readkey()
+        if key == 'y':
+            for i,x in enumerate(player.inv):
+                print(f"{i} - {x}")
+            run = True
+            while run == True:
+                a = input("Enter the number > ")
+                try:
+                    player.inv.remove(player.inv[int(a)])
+                    player.inv.append(item)
+                except:
+                    print("That is not a valid number.")
+    else:
+        player.inv.append(item)
 
 def convert(astr):
     return json.loads(astr)
@@ -34,15 +55,21 @@ def MaxHp(player):
             player.hp = 400
 
 def Exp(player):
-    if player.exp < 100:
+    lastlvl = player.lvl
+    if player.exp < 50:
         player.lvl = 1
-        player.Rexp = 100 - player.exp
-    elif player.exp > 100 and player.exp < 500:
+        player.Rexp = 50 - player.exp
+    elif player.exp > 50 and player.exp < 300:
         player.lvl = 2
-        player.Rexp = 500 - player.exp
-    elif player.exp > 500 and player.exp < 1000:
+        player.Rexp = 300 - player.exp
+    elif player.exp > 300 and player.exp < 700:
         player.lvl = 3
-        player.Rexp = 1000 - player.exp
+        player.Rexp = 700 - player.exp
+    if lastlvl != player.lvl:
+        Type("You have leveled up!")
+        Type("You regain full health!!!")
+        MaxHp(player)
+        player.hp = player.maxhp
 
 def Save(player1):
     save = open("Savefile.txt",'w')
@@ -103,7 +130,7 @@ def LoadGame():
     Fire.char = int(loc3[0])
     Ice.char = int(loc3[1])
     Cool.char = int(loc3[2])
-    Hot.char = int(loc3[3]) #FIX THISSSSS
+    Hot.char = int(loc3[3])
     player1.location.Update()
     player1.Actions()
 
@@ -179,6 +206,13 @@ Fire = Weapons('Fire Amulet',3,2)
 Ice = Weapons('Ice Amulet',5,0)
 Cool = Weapons('Cool Amulet',10,0)
 Hot = Weapons('Hot Amulet',15,0)
+
+class Potion:
+    def __init__(item, name, atk,charges):
+        item.name = name
+        item.atk = atk
+        item.char = charges
+
 class Goblin:
     def __init__(mob,name):
         mob.name = name
@@ -186,7 +220,8 @@ class Goblin:
         mob.atk = 1
         mob.exp = 5
         mob.gold = 2
-        mob.ran = [1,3]
+        mob.ran = [1,2]
+        mob.drops = 'Goblin Ear'
 
 class Slime:
     def __init__(mob,name):
@@ -196,14 +231,35 @@ class Slime:
         mob.exp = 7
         mob.gold = 3
         mob.ran = [1,4]
+        mob.drops = 'Slime Goo'
 
-class GuardE: #Change stats for game balancing later
+class Sprite:
+    def __init__(mob,name):
+        mob.name = name
+        mob.hp = 30
+        mob.atk = 3
+        mob.exp = 10
+        mob.gold = 3
+        mob.ran = [1,5]
+        mob.drops = 'Sprite Essence'
+
+class Troll:
+    def __init__(mob,name):
+        mob.name = name
+        mob.hp = 50
+        mob.atk = 5
+        mob.exp = 20
+        mob.gold = 3
+        mob.ran = [1,7]
+        mob.drops = 'Troll Nail'
+
+class GuardE:
     def __init__(mob,name):
         mob.name = name
         mob.hp = 100
         mob.atk = 10
-        mob.exp = 7
-        mob.gold = 3
+        mob.exp = 30
+        mob.gold = 40
         mob.ran = [1,10]
 
 class Stats:
@@ -409,6 +465,9 @@ class Stats:
         for x in At:
             gold += x.gold * random.randint(x.ran[0],x.ran[1])
             exp += x.exp * random.randint(x.ran[0],x.ran[1])
+            if random.randint(x.ran[0],x.ran[1]) == x.ran[1]:
+                Check_Full(self,x.drops)
+                Type(f"The {x.name} dropped a {x.drops}.")
         Type(f"You have gained {gold} gold pieces and {exp} exprience points!")
         self.beat = ''
         # Cutscenes after combat:
@@ -422,12 +481,12 @@ class Stats:
             key = readchar.readkey()
             if key == 'y':
                 Type("You have obtained the tiny knife...")
-                self.inv.append("Tiny Knife")
+                Check_Full(self,"Tiny Knife")
         if 'Defeated Guard' in self.cuts:
             Type(f"[Guard]: You? Defeated me? May you have mercy on our small island of Javara.")
             Type(f"[Guard]: We did not intend to fall onto your magicless land. Alas one of our own sabatagoted us.")
             MainCity.mapper[5][6] = '.'
-        self.gold += gold   
+        self.gold += gold
         self.exp += exp
         self.location = last_loc
         Exp(self)
@@ -437,6 +496,20 @@ class Stats:
         while True:
             key = readchar.readkey()
             self.location.mapper[self.location.l_y][self.location.l_x] = self.location.Last1
+            if key == 'x':
+                Type("What item would you like to drop?")
+                if 'Help3' not in self.cuts:
+                    Type("[Tutorial]: Be careful if you drop an item you can never get it back.")
+                    Type("[Tutorial]: You can sell random items to Marina instead?")
+                    self.cuts.append("Help3")
+                for o,i in enumerate(self.inv):
+                    print(f"{o} - {i}")
+                items = dict(enumerate(self.inv))
+                item = input("Enter the number. > ")
+                try: 
+                    self.inv.remove(items[int(item)])
+                except:
+                    print("You don't have that item.")
             if key == 'e':
                 if self.location.Last1 == '~':
                     Randomise(self)
@@ -463,6 +536,11 @@ class Stats:
                     Type(f"{self.name} is currently not doing any quests.")
                 else:
                     Type(f"{self.name} is currently doing {self.curq} quest.")
+                print("Would you like to see all actions? (y/n)")
+                key = readchar.readkey()
+                if key == 'y':
+                    print("'z' - Check player Status")  #Finish this list 
+                    print("")
                 input("Click enter to continue...")
             if key == 'q':
                 Type("What item would you like to use?")
@@ -666,7 +744,7 @@ def Tut_Fight(player):
     Type(f'[Goblin]: $£&£% $%&$!£%$& £$%@#')
     Type(f'[Ambrosia]: Is that a stray goblin? Quick use this!')
     Type('You obtained a Fire amulet!')
-    player.inv.append("Fire Amulet")
+    Check_Full(player,"Fire Amulet")
     Type(f"[Tutorial]: {player.name}, click q to use the fire amulet.")
     global last_loc
     last_loc = Tut
@@ -749,7 +827,8 @@ def Amb2(player):
             time.sleep(2)
             Type(f"[Ambrosia]: I see.")
             player.curq.append('Ruin Hunter')
-            Type("New Quest Started!\n>>>The Disguised Ruin Hunter<<<")
+            Type("NEW QUEST!\n>>>The Disguised Ruin Hunter<<<")
+            time.sleep(1)
     player.location.mapper[1][3] = '.'
     player.location.Update()
     player.cuts.append("Amb2")
@@ -836,7 +915,7 @@ def Weapons_Shop(player): # Harley
                 Type("[Harley]: You're short. Come back when you have enough gold.")
             else:
                 player.gold = a
-                player.inv.append(Harley.stock[num])
+                Check_Full(player,Harley.stock[num])
                 Harley.stock.remove(Harley.stock[num])
                 Type("[Harley]: Hope you like it!")
         except:
@@ -921,10 +1000,10 @@ def Weapons_Shop(player): # Harley
                     if key == 'y':
                         num = 5
                         Type("[Harley]: Let me cook.")
-                        if num < player.gold:
+                        if num > player.gold:
                             Type("[Harley]: You're short. Come back when you have enough gold.")
                         else:
-                            player.inv.append('Enhanced Sword')
+                            Check_Full(player,"Enhanced Sword")
                             player.inv.remove('Sword')
                             player.inv.remove("Clear Gem")
                             player.gold -= num
@@ -940,10 +1019,10 @@ def Weapons_Shop(player): # Harley
                     if key == 'y':
                         num = 5
                         Type("[Harley]: Let me cook.")
-                        if num < player.gold:
+                        if num > player.gold:
                             Type("[Harley]: You're short. Come back when you have enough gold.")
                         else:
-                            player.inv.append('Enhanced Dagger')
+                            Check_Full(player,"Enhanced Dagger")
                             player.inv.remove('Dagger')
                             player.inv.remove("Clear Gem")
                             player.gold -= num
@@ -959,10 +1038,10 @@ def Weapons_Shop(player): # Harley
                     if key == 'y':
                         num = 5
                         Type("[Harley]: Let me cook.")
-                        if num < player.gold:
+                        if num > player.gold:
                             Type("[Harley]: You're short. Come back when you have enough gold.")
                         else:
-                            player.inv.append('Enhanced Axe')
+                            Check_Full(player,"Enhanced Axe")
                             player.inv.remove('Axe')
                             player.inv.remove("Clear Gem")
                             player.gold -= num
@@ -978,7 +1057,7 @@ def Weapons_Shop(player): # Harley
                     if key == 'y':
                         num = 5
                         Type("[Harley]: This is too easy.")
-                        if num < player.gold:
+                        if num > player.gold:
                             Type("[Harley]: You're short. Come back when you have enough gold.")
                         else:
                             player.inv.append('Fire Amulet')
@@ -997,7 +1076,7 @@ def Weapons_Shop(player): # Harley
                     if key == 'y':
                         num = 5
                         Type("[Harley]: This is too easy.")
-                        if num < player.gold:
+                        if num > player.gold:
                             Type("[Harley]: You're short. Come back when you have enough gold.")
                         else:
                             player.inv.append('Ice Amulet')
@@ -1016,7 +1095,7 @@ def Weapons_Shop(player): # Harley
                     if key == 'y':
                         num = 5
                         Type("[Harley]: This is too easy.")
-                        if num < player.gold:
+                        if num > player.gold:
                             Type("[Harley]: You're short. Come back when you have enough gold.")
                         else:
                             player.inv.append('Cool Amulet')
@@ -1035,7 +1114,7 @@ def Weapons_Shop(player): # Harley
                     if key == 'y':
                         num = 5
                         Type("[Harley]: I'm excited to try this out!")
-                        if num < player.gold:
+                        if num > player.gold:
                             Type("[Harley]: You're short. Come back when you have enough gold.")
                         else:
                             player.inv.remove("Clear Gem")
@@ -1053,7 +1132,7 @@ def Weapons_Shop(player): # Harley
                     if key == 'y':
                         num = 5
                         Type("[Harley]: I've got this! It should work now.")
-                        if num < player.gold:
+                        if num > player.gold:
                             Type("[Harley]: You're short. Come back when you have enough gold.")
                         else:
                             player.inv.append('Hot Amulet')
@@ -1109,27 +1188,134 @@ def Conversion(player): #Dhara
         for x,i in enumerate(Dhara.stock):
             print(f"{x} - {i} for {Dhara.mapper[i]} Gold")
         num = int(input("Enter the Number. > "))
-        #try:
-        if Dhara.stock[num] == 'Gold':
-            Type("[Dhara]: How much gold do you want to exchange?")
-            num = int(input("Enter the Number. > "))
-            if num <= player.gold:
-                player.gold -= num
-                dollar_count += num * 1000
-                Type(f"[Dhara]: Here, I've transferred the money. In total I've given you ${dollar_count}.")
+        try:
+            if Dhara.stock[num] == 'Gold':
+                Type("[Dhara]: How much gold do you want to exchange?")
+                num = int(input("Enter the Number. > "))
+                if num <= player.gold:
+                    player.gold -= num
+                    global dollar_count
+                    dollar_count += num * 1000
+                    Type(f"[Dhara]: Here, I've transferred the money. In total I've given you ${dollar_count}.")
+                else:
+                    Type("[Dhara]: Don't try and cheat me. It's a waste of time.")
             else:
-                Type("[Dhara]: Don't try and cheat me. It's a waste of time.")
+                dollar_count += Dhara.mapper[Dhara.stock[num]]*1000
+                Type(f"[Dhara]: Ah, a {Dhara.stock[num]}. I'll transfer {Dhara.mapper[Dhara.stock[num]]*1000} for this.")
+                Type(f"[Dhara]: In total I have transferred ${dollar_count} to you. It was a pleasure doing business with you.")
+        except:
+            Type("[Dhara]: I don't exchange those types of items...")
+
+def Shady_Merchant(player):# Taylor the Ruin Hunter
+    if 'Shad' not in player.cuts:
+        if 'Ruin Hunter' in player.curq:
+            Type(f"[{player.name}]: You're the ruin hunter I was talking to online correct? Taylor?")
+            Type(f"[Taylor]: Yes, you are {player.name} I believe. I'm happy you made it.")
+            Type(f"[{player.name}]: Passing the test to get to Javara wasn't very difficult when I have an inside man.")
+            Type(f"[{player.name}]: A stray summon even attacked me and I got a free amulet.")
+            Type("[Taylor]: Which one?")
+            Type(f"[{player.name}]: A fire amulet. It seems quite powerful.")
+            Type("[Taylor]: Yes it is. But you need to recharge or it will lose its power. I'll recharge it for you.")
+            Type("[Taylor]: Well, I can see how compentent you are already. I've got a hunting spot for you. Yet, I fear it may be too easy for you.")
+            Type("QUEST COMPLETED!")
+            Type(">>>RUIN HUNTER<<<")
+            Type("Reward: 20 Exp!")
+            player.cuts.append("Joined")
+            player.curq.remove('Ruin Hunter')
+            player.compq.append("Ruin Hunter")
+            player.exp += 20
+            Exp(player)
+            MaxHp(player)
         else:
-            dollar_count += Dhara.mapper[Dhara.stock[num]]*1000
-            Type(f"[Dhara]: Ah, a {Dhara.stock[num]}. I'll transfer {Dhara.mapper[Dhara.stock[num]]*1000} for this.")
-            Type(f"[Dhara]: In total I have transferred ${dollar_count} to you. It was a pleasure doing business with you.")
-        #except:
-            #Type("[Dhara]: I don't exchange those types of items...")
-
-def Shady_Merchant(player):#
-    pass
-
-def Potion_Geek(player):#
+            Type("[???]: Get lost.")
+            Type("Leave? (y/n)")
+            key = readchar.readkey()
+            if key == 'n':
+                Type(f"[{player.name}]: Why should I? I'm just a vistor - if you didn't want vistors to bother you...")
+                Type(f"[{player.name}]: You should've said at home.")
+                Type(f"[Taylor]: Confident. I like you. The name's Taylor.")
+                Type(f"[Taylor]: How about you assist some of your vistor friends by joining my crew - The Ruin Hunters.")
+                Type(f"[{player.name}]: Ruin Hunters? What do you do?")
+                Type(f"[Taylor]: We loot the ruins of this land and sell the spoils to your land.")
+                Type(f"[Taylor]: Join us, any spoils you get you can sell to Dhara - so long as you hunt where the boss tells you.")
+                Type("Join? (y/n)")
+                key = readchar.readkey()
+                if key == 'y':
+                    Type(f"[Taylor]: Wonderful. I've got your first hunting spot ready.")
+                    player.cuts.append("Joined")
+                else:
+                    Type(f"[Taylor]: No? I've never had a vistor refuse before... You know too much.")
+                    Type(f"[Taylor]: You are lucky that guard in the corner is watching over the square.")
+                    Type(f"[Taylor]: Watch your back. It's not only summons that will attack you now...")
+                    MainCity.mapper[3][5] = '.'
+        player.cuts.append('Shad')
+    if 'Joined' in player.cuts:
+        if 'Tenja' not in player.cuts:
+            Type(f"[Taylor]: The first hunting spot I have for you is the Tenja Temple.")
+            Type(f"[Taylor]: It's at the end of the Tenja Path, it looks like this '_' from here.")
+            Type(f"[Taylor]: There are only simple summons on that path and in the temple.")
+            Type(f"[Taylor]: The Guardian is quite weak - you so find it easy.")
+            Type(f"[Taylor]: Bring back the staff of Tenja to prove you killed the Guardian.")
+            Type(f"[Taylor]: Don't worry you can keep it.")
+            Type("NEW QUEST!\n>>>Defeat the Tenja Guardian<<<")
+            player.curq.append("Defeat Tenja")
+            player.cuts.append('Tenja')
+        elif 'Defeat Tenja' not in player.cuts:
+            if 'The Tenja Staff' not in player.inv:
+                Type(f"[Taylor]: Come back when you have proof you killed the Tenja Guardian.")
+                Type(f"[Taylor]: {player.name}, I thought you would find this hunt easy?")
+            else:
+                Type("[Taylor]: Amazing. The staff looks even better in person!")
+                Type("QUEST COMPLETED!\n>>>Defeat the Tenja Guardian<<<")
+                player.cuts.append("Defeat Tenja")
+                player.compq.append('Defeat Tenja')
+        if 'Mylva' not in player.cuts and "Defeat Tenja" in player.compq:
+            Type(f"[Taylor]: The second hunting spot I have for you is the Mylva Temple.")
+            Type(f"[Taylor]: It's at the end of the Mylva Path, it looks like this '^' from here.")
+            Type(f"[Taylor]: It's a trouble to get in as the Guardian recently made a puzzle you must solve for entry.")
+            Type(f"[Taylor]: I've got one of the native Ruin hunters to help you out - Arden.")
+            Type(f"[Taylor]: He should solve that puzzle and all you need to do is kill the Guardian.")
+            Type(f"[Taylor]: Make sure to bring the shield here.")
+            Type("NEW QUEST!\n>>>Defeat the Mylva Guardian<<<")
+            player.curq.append("Defeat Mylva")
+            player.cuts.append('Mylva')
+        elif 'Defeat Mylva' not in player.cuts and "Defeat Tenja" in player.compq:
+            if 'The Mylva Shield' not in player.inv:
+                Type("[Taylor]: Solve the puzzle, kill the guardian, bring the shield.")
+                Type("[Taylor]: Simple. Now do it.")
+            else:
+                Type("[Taylor]: Good job. Now there is only one relic left for you to obtain.")
+                Type("QUEST COMPLETED!\n>>>Defeat the Mylva Guardian<<<")
+                player.compq.append("Defeat Mylva")
+                player.cuts.append('Defeat Mylva')
+        if 'Defeat Xira' not in player.cuts and "Defeat Mylva" in player.compq:
+            if 'The Xira Crown' not in player.inv:
+                Type("[Taylor]: Not even you can aquire the crown?")
+                Type("[Taylor]: Try again... If we aquire all three relics, we could bring magic to your land!")
+            else:
+                Type("[Taylor]: I think it's time you met the Boss. He has requested that you show him the relics.")
+                Type("[Taylor]: Go to the Great Temple. The Guard may try to stop you but you are strong. The Boss will meet you there.")
+            player.compq.append("Defeat Xira")
+            player.cuts.append('Defeat Xira')
+            Type("NEW QUEST!\n>>>Meet the Boss of the Ruin Hunters<<<")
+            player.curq.append("Meet")
+            player.cuts.append('Xira')
+        elif 'Xira' not in player.cuts and "Defeat Mylva" in player.compq:
+            Type(f"[Taylor]: This time you need to go to the Xira Temple. It's very dangerous so be careful.")
+            Type(f"[Taylor]: It's at the end of the Xira Path, it looks like this '-' from here.")
+            Type(f"[Taylor]:The Guardian is very strong so make sure to focus your attacks on weaker followers first.")
+            Type(f"[Taylor]: And make sure to get a lot of potions. I'll give you two to assist you.")
+            Check_Full(player,'Simple Potion')
+            Check_Full(player,'Simple Potion')
+            Type(f"[Taylor]: Unfortunately, I can't get any other Ruin Hunters to assist you.")
+            Type(f"[Taylor]: They are working hard to cover up the deaths of the other Guardians.\n[Taylor]: Make sure to bring the crown back here.")
+            Type("NEW QUEST!\n>>>Defeat the Xira Guardian<<<")
+            player.curq.append("Defeat Xira")
+            player.cuts.append('Xira')  
+    else:
+        Type("[???]: Didn't I tell you to get lost? Beat it.")
+    
+def Potion_Geek(player):# Marina
     pass
 
 MainCity = Area("Main City",[["#","_","#","^","#","-","#","#"],
