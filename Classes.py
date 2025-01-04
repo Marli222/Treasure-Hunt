@@ -193,8 +193,43 @@ def Attack(player,mob):
     else:
         pass
 
-def Randomise(player):
-    Type("your mother")
+def Randomise(player): 
+    if player.location == MainCity:
+        a = random.randint(1,10)
+        if a > 0 and a < 6: #Cheap Item
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found a Frying Pan!")
+                Check_Full(player,"Frying Pan")
+            elif b >= 4 and b < 7:
+                Type("You found Worn Boots!")
+                Check_Full(player,"Worn Boots")
+            elif b >= 7 and b < 10:
+                Type("You found a Clear Gem!")
+                Check_Full(player,"Clear Gem")
+            elif b == 10:
+                Type("You found a half drunk potion!")
+                Check_Full(player,"Half Drunk Potion")
+        elif a >= 6 and a < 9: #Ambush
+            Type("Some Goblins Ambushed you!")
+            global last_loc
+            last_loc = MainCity
+            player.Combat(['Goblin1','Goblin2'],{'Goblin1':'$','Goblin2':'#','$':Fight},{'$':'Goblin1','#':'Goblin2'})
+        elif a >= 9: #Rare
+            Type("You found something rare!")
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found a Clear Gem!")
+                Check_Full(player,"Clear Gem")
+            elif b >= 4 and b < 7:
+                Type("You found Refined Clear Gem!")
+                Check_Full(player,"Refined Clear Gem")
+            elif b >= 7 and b < 10:
+                Type("You found a Fire Gem Ore!")
+                Check_Full(player,"Fire Gem Ore")
+            elif b == 10:
+                Type("You found a simple potion!")
+                Check_Full(player,"Simple Potion")
 
 class Shop:
     def __init__(shop,stock,stockmapper):
@@ -625,6 +660,8 @@ class Stats:
             Type(f"[Guard]: You? Defeated me? May you have mercy on our small island of Javara.")
             Type(f"[Guard]: We did not intend to fall onto your magicless land. Alas one of our own sabatagoted us.")
             MainCity.mapper[5][6] = '.'
+            global last_loc
+            last_loc = MainCity
         self.gold += gold
         self.exp += exp
         self.location = last_loc
@@ -1082,7 +1119,7 @@ def Weapons_Shop(player): # Harley
     elif key == 'r':
         Type("[Harley]: You want a recharge? I'll need the gem of the amulet and some Gold to do it.")
         Type("[Harley]: Show me the one you want to recharge.")
-        list = ['Fire Amulet','Ice Amulet','Cool Amulet','Hot amulet']
+        list = ['Fire Amulet','Ice Amulet','Cool Amulet','Hot Amulet']
         for i,x in enumerate(list):
             print(f"{i} - {x}")
         num = int(input("Enter the Number. > "))
@@ -1138,7 +1175,7 @@ def Weapons_Shop(player): # Harley
                     else:
                         player.gold -= num
                         Hot.char += num//25
-                        player.inv.remove("Hot Gem")
+                        player.inv.remove("Refined Clear Gem")
                         Type(f"[Harley]: I'm Done! You now have {Hot.char} charges.")
         except:
             Type("[Harley]: Hahahaha. That's not an amulet.")
