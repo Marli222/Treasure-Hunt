@@ -147,12 +147,13 @@ def Fight(y,x,player,target,all):
         if player.beat == '':
             Type("[Tutorial]: You need to equip a weapon to fight. Click q..")
             return
-        if player.beat.name == 'Fire Amulet': #All magic items will be here.
+        if player.beat.name == 'Fire Amulet' or player.beat.name == 'Ice Amulet' or player.beat.name == 'Cool Amulet' or player.beat.name == 'Hot Amulet':
             if player.beat.char <= 0:
                 Type("There are no more charges left...")
                 if 'Help1' not in player.cuts:
                     Type("[Tutorial]: There are no more charges of this weapon.")
                     Type("[Tutorial]: Click q to use your fists, they never run out of charge...")
+                    Type("[Tutorial]: You can also go to Harley to recharge or even craft a new amulet.")
                     player.cuts.append("Help1")
                 a = 0
             else:
@@ -163,9 +164,12 @@ def Fight(y,x,player,target,all):
         if player.beat.name == 'Fist':
             a = player.atk + player.wpatk
             print(f"You punched {target.name}! {player.name} dealt {a} damage!")
-        elif player.beat.name == 'Tiny Knife':
+        elif player.beat.name == 'Tiny Knife' or player.beat.name == 'Sword' or player.beat.name == 'Enhanced_Sword' or player.beat.name == 'Dagger' or player.beat.name == 'Enhanced_Dagger':
             a = player.atk + player.wpatk
             print(f"You stabbed {target.name}! {player.name} dealt {a} damage!")
+        elif player.beat.name == 'Axe' or player.beat.name == 'Enhanced Axe':
+            a = player.atk + player.wpatk
+            print(f"You punched {target.name}! {player.name} dealt {a} damage!")
     else:
         print(f"{target.name} dodged your attack.")
     target.hp -= a
@@ -207,12 +211,6 @@ Ice = Weapons('Ice Amulet',5,0)
 Cool = Weapons('Cool Amulet',10,0)
 Hot = Weapons('Hot Amulet',15,0)
 
-class Potion:
-    def __init__(item, name, atk,charges):
-        item.name = name
-        item.atk = atk
-        item.char = charges
-
 class Goblin:
     def __init__(mob,name):
         mob.name = name
@@ -252,6 +250,76 @@ class Troll:
         mob.gold = 3
         mob.ran = [1,7]
         mob.drops = 'Troll Nail'
+
+class Lich:
+    def __init__(mob,name):
+        mob.name = name
+        mob.hp = 60
+        mob.atk = 5
+        mob.exp = 20
+        mob.gold = 3
+        mob.ran = [1,9]
+        mob.drops = 'Glowing Skull'
+
+class TFollower:
+    def __init__(mob,name):
+        mob.name = name
+        mob.hp = 60
+        mob.atk = 5
+        mob.exp = 20
+        mob.gold = 3
+        mob.ran = [1,9]
+        mob.drops = 'Half Drunk Potion'
+
+class TGuardian:
+    def __init__(mob,name):
+        mob.name = name
+        mob.hp = 60
+        mob.atk = 5
+        mob.exp = 20
+        mob.gold = 3
+        mob.ran = [1,9]
+        mob.drops = 'Fire Gem'
+
+class MFollower:
+    def __init__(mob,name):
+        mob.name = name
+        mob.hp = 60
+        mob.atk = 5
+        mob.exp = 20
+        mob.gold = 3
+        mob.ran = [1,9]
+        mob.drops = 'Simple Potion'
+
+class MGuardian:
+    def __init__(mob,name):
+        mob.name = name
+        mob.hp = 60
+        mob.atk = 5
+        mob.exp = 20
+        mob.gold = 3
+        mob.ran = [1,9]
+        mob.drops = 'Ice Gem'
+
+class XFollower:
+    def __init__(mob,name):
+        mob.name = name
+        mob.hp = 60
+        mob.atk = 5
+        mob.exp = 20
+        mob.gold = 3
+        mob.ran = [1,9]
+        mob.drops = 'Spicy Potion'
+
+class TGuardian:
+    def __init__(mob,name):
+        mob.name = name
+        mob.hp = 60
+        mob.atk = 5
+        mob.exp = 20
+        mob.gold = 3
+        mob.ran = [1,9]
+        mob.drops = 'Cool Gem'
 
 class GuardE:
     def __init__(mob,name):
@@ -331,6 +399,21 @@ class Stats:
                         self.beat = Fire
                         self.wpatk = Fire.atk
                         time.sleep(1)
+                    elif wp == "Ice Amulet":
+                        Type(f"You have equipped the Ice Amulet! It has {Ice.char} charges left.")
+                        self.beat = Ice
+                        self.wpatk = Ice.atk
+                        time.sleep(1)
+                    elif wp == "Cool Amulet":
+                        Type(f"You have equipped the Cool Amulet! It has {Cool.char} charges left.")
+                        self.beat = Cool
+                        self.wpatk = Cool.atk
+                        time.sleep(1)
+                    elif wp == "Hot Amulet":
+                        Type(f"You have equipped the Hot Amulet! It has {Hot.char} charges left.")
+                        self.beat = Hot
+                        self.wpatk = Hot.atk
+                        time.sleep(1)
                     elif wp == "Fist":
                         Fist = Weapons('Fist',self.atk,'')
                         Type(f"You've clenched your fists!")
@@ -343,6 +426,62 @@ class Stats:
                         self.beat = Knife
                         self.wpatk = Knife.atk
                         time.sleep(1)
+                    elif wp == "Dagger":
+                        Dagger = Weapons('Dagger',2,'')
+                        Type("You unseathed your dagger.")
+                        self.beat = Dagger
+                        self.wpatk = Dagger.atk
+                        time.sleep(1)
+                    elif wp == "Enhanced Dagger":
+                        Enhanced_Dagger = Weapons('Enhanced Dagger',4,'')
+                        Type("You unseathed your dagger. It shimmers with magic.")
+                        self.beat = Enhanced_Dagger
+                        self.wpatk = Enhanced_Dagger.atk
+                        time.sleep(1)
+                    elif wp == "Sword":
+                        Sword = Weapons('Sword',3,'')
+                        Type("You unseathed your sword.")
+                        self.beat = Sword
+                        self.wpatk = Sword.atk
+                        time.sleep(1)
+                    elif wp == "Enhanced Sword":
+                        Enhanced_Sword = Weapons('Enhanced Sword',5,'')
+                        Type("You unseathed your sword. It shimmers with magic.")
+                        self.beat = Enhanced_Sword
+                        self.wpatk = Enhanced_Sword.atk
+                        time.sleep(1)
+                    elif wp == "Axe":
+                        Axe = Weapons('Axe',5,'')
+                        Type("You gripped your axe.")
+                        self.beat = Axe
+                        self.wpatk = Axe.atk
+                        time.sleep(1)
+                    elif wp == "Enhanced Axe":
+                        Enhanced_Axe = Weapons('Enhanced Axe',6,'')
+                        Type("You gripped your axe. It shimmers with magic.")
+                        self.beat = Enhanced_Axe
+                        self.wpatk = Enhanced_Axe.atk
+                        time.sleep(1)
+                    elif wp == 'Half Drunk Potion':
+                        self.hp += random.randint(5,10)
+                        MaxHp(self)
+                        Type(f"The potion restored your health! You have {self.hp} hp.")
+                        self.inv.remove('Half Drunk Potion')
+                    elif wp == 'Simple Potion':
+                        self.hp += random.randint(15,20)
+                        MaxHp(self)
+                        Type(f"The potion restored your health! You have {self.hp} hp.")
+                        self.inv.remove('Simple Potion')
+                    elif wp == 'Spicy Potion':
+                        self.hp += random.randint(20,40)
+                        MaxHp(self)
+                        Type(f"The potion restored your health! You have {self.hp} hp.")
+                        self.inv.remove('Spicy Potion')
+                    elif wp == 'Nasty Potion':
+                        self.hp += random.randint(50,70)
+                        MaxHp(self)
+                        Type(f"The potion restored your health! You have {self.hp} hp.")
+                        self.inv.remove('Spicy Potion')
                 except:
                     print("You don't have that item.")
             elif key == "w":
@@ -540,7 +679,10 @@ class Stats:
                 key = readchar.readkey()
                 if key == 'y':
                     print("'z' - Check player Status")  #Finish this list 
-                    print("")
+                    print("'x' - Remove an Item from Inventory")
+                    print("'e' - Investigate the area")
+                    print("'q' - Use an item")
+                    print("'p' - Save & Quit")        
                 input("Click enter to continue...")
             if key == 'q':
                 Type("What item would you like to use?")
@@ -549,7 +691,24 @@ class Stats:
                 items = dict(enumerate(self.inv))
                 item = input("Enter the number. > ")
                 try: 
-                    print(items[int(item)])
+                    a = items[int(item)]
+                    if a == 'Half Drunk Potion':
+                        self.hp += random.randint(5,10)
+                        MaxHp(self)
+                        Type(f"The potion restored your health! You have {self.hp} hp.")
+                        self.inv.remove('Half Drunk Potion')
+                    elif a == 'Simple Potion':
+                        self.hp += random.randint(15,20)
+                        MaxHp(self)
+                        Type(f"The potion restored your health! You have {self.hp} hp.")
+                        self.inv.remove('Simple Potion')
+                    elif a == 'Spicy Potion':
+                        self.hp += random.randint(5,10)
+                        MaxHp(self)
+                        Type(f"The potion restored your health! You have {self.hp} hp.")
+                        self.inv.remove('Spicy Potion')
+                    else:
+                        Type("You can't use that item.")
                 except:
                     print("You don't have that item.")
             if key == "p":
@@ -1314,9 +1473,55 @@ def Shady_Merchant(player):# Taylor the Ruin Hunter
             player.cuts.append('Xira')  
     else:
         Type("[???]: Didn't I tell you to get lost? Beat it.")
-    
+
+Marina = Shop(['Simple Potion','Spicy Potion','Nasty Potion'],{'Simple Potion':10,'Spicy Potion':20,'Nasty Potion':50})
+Marina2 = Shop(['Glowing Skull','Troll Nail','Sprite Essence','Slime Goo','Goblin Ear','Frying Pan','Worn Boots','Simple Potion','Spicy Potion','Nasty Potion','Clear Gem','Refined Clear Gem','Fire Gem Ore','Fire Gem','Ice Gem Ore','Ice Gem','Cool Gem Ore','Cool Gem','Fire Amulet','Ice Amulet','Cool Amulet','Hot Amulet','Axe','Sword','Dagger','Tiny Knife','Enhanced Dagger','Enhanced Axe','Enhanced Sword'],{'Glowing Skull':100,'Troll Nail':70,'Sprite Essence':50,'Slime Goo':20,'Goblin Ear':10,'Frying Pan':1,'Worn Boots':1,'Simple Potion':10,'Spicy Potion':20,'Nasty Potion':30,'Clear Gem':1,'Refined Clear Gem':5,'Fire Gem Ore':5,'Fire Gem':10,'Ice Gem Ore':15,'Ice Gem':20,'Cool Gem Ore':30,'Cool Gem':40,'Fire Amulet':10,'Ice Amulet':20,'Cool Amulet':30,'Hot Amulet':50,'Axe':30,'Sword':20,'Dagger':10,'Tiny Knife':5,'Enhanced Dagger':20,'Enhanced Axe':60,'Enhanced Sword':40})
 def Potion_Geek(player):# Marina
-    pass
+    if 'Pot' not in player.cuts:
+        Type("[???]: Hello, you're a vistor aren't you? What's your name?")
+        Type(f"[{player.name}]: I'm {player.name}.")
+        Type("[Marina]: My name is Marina, would you like to try out my potions?")
+        if player.hp < player.maxhp:
+            Type("[Marina]: I can see you've taken some damage from some summons...")
+            Type("[Marina]: I can sell you some potions - they heal wounds instantly!")
+            Type("[Marina]: A far upgrade from the medicene in your land.")
+        else:
+            Type("[Marina]: Some how you're unscathed from our summons...")
+            Type("[Marina]: Your luck won't last forever! I suggest you get some potions just in case.")
+        player.cuts.append('Pot')
+    Type("[Marina]: Wanna buy some potions? I brewed them today! Or are you here to sell something? (p/s)")
+    key = readchar.readkey()
+    if key == 'p':
+        Type("[Marina]: These is all my potions!")
+        for x,i in enumerate(Marina.stock):
+            print(f"{x} - {i} costs {Marina.mapper[i]} Gold")
+        Type("[Marina]: Which would you like?")
+        num = int(input("Enter the Number. > "))
+        try:
+            a = player.gold - Marina.mapper[Marina.stock[num]]
+            if a < 0:
+                Type("[Marina]: Sell me some of your items, then maybe you'll have enough gold?")
+            else:
+                player.gold = a
+                Check_Full(player,Marina.stock[num])
+                Type("[Marina]: Hope you like it!")
+        except:
+            Type("[Marina]: I don't sell those types of potions...")
+    elif key == 's':
+        Type("[Marina]: Ooooooh! What have you brought for me? I'll buy anything you found here off you.")
+        for x,i in enumerate(Marina2.stock):
+            print(f"{x} - {i} for {Marina2.mapper[i]} Gold")
+        num = int(input("Enter the Number. > "))
+        try:
+            if Marina2.stock[num] in player.inv:
+                Type("[Marina]: Nice, I can add this to my collection! I'm sure I can make a potion from this.")
+                player.inv.remove(Marina2.stock[num])
+                player.gold += Marina2.mapper[Marina2.stock[num]]
+            else:
+                Type("[Marina]: If you don't have the item don't waste my time. And don't get my hopes up.")
+        except:
+            Type("[Marina]: That doesn't exist... Is that something useful from your land?")
+
 
 MainCity = Area("Main City",[["#","_","#","^","#","-","#","#"],
         ["#",".",".",".",".",".",".","#"],

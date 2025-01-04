@@ -1,1 +1,1 @@
-MainCity¬10¬1¬5¬45¬1¬wKin¬["Fire Amulet", "Clear Gem"]¬35¬1¬¬¬[]¬["Ruin Hunter"]¬["Help1", "Help2", "Gob", "Amb2", "Wep", "Help3", "Con"]¬10
+MainCity¬10¬1¬5¬45¬1¬wKin¬[]¬40¬1¬¬¬[]¬["Ruin Hunter"]¬["Help1", "Help2", "Gob", "Amb2", "Wep", "Help3", "Con", "Pot"]¬10
