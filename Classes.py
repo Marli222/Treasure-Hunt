@@ -32,27 +32,47 @@ def convert(astr):
     return json.loads(astr)
 
 def MaxHp(player):
+    if player.lvl == 1:
+        player.maxhp = 10
+    elif player.lvl == 2:
+        player.maxhp = 30
+    elif player.lvl == 3:
+        player.maxhp = 50
+    elif player.lvl == 4:
+        player.maxhp = 70
+    elif player.lvl == 5:
+        player.maxhp = 100
+    elif player.lvl == 6:
+        player.maxhp = 200
+    elif player.lvl == 7:
+        player.maxhp = 300
+    elif player.lvl == 8:
+        player.maxhp = 400
+    elif player.lvl == 9:
+        player.maxhp = 500
+    elif player.lvl == 10:
+        player.maxhp = 600
     if player.hp > player.maxhp:
         if player.lvl == 1:
             player.hp = 10
         elif player.lvl == 2:
-            player.hp = 20
+            player.hp = 30
         elif player.lvl == 3:
-            player.hp = 35
-        elif player.lvl == 4:
             player.hp = 50
-        elif player.lvl == 5:
+        elif player.lvl == 4:
             player.hp = 70
+        elif player.lvl == 5:
+            player.hp = 100
         elif player.lvl == 6:
-            player.hp = 175
-        elif player.lvl == 7:
             player.hp = 200
-        elif player.lvl == 8:
-            player.hp = 250
-        elif player.lvl == 9:
+        elif player.lvl == 7:
             player.hp = 300
-        elif player.lvl == 10:
+        elif player.lvl == 8:
             player.hp = 400
+        elif player.lvl == 9:
+            player.hp = 500
+        elif player.lvl == 10:
+            player.hp = 600
 
 def Exp(player):
     lastlvl = player.lvl
@@ -65,7 +85,30 @@ def Exp(player):
     elif player.exp > 300 and player.exp < 700:
         player.lvl = 3
         player.Rexp = 700 - player.exp
+    elif player.exp > 700 and player.exp < 1200:
+        player.lvl = 4
+        player.Rexp = 1200 - player.exp
+    elif player.exp > 1200 and player.exp < 2000:
+        player.lvl = 5
+        player.Rexp = 2000 - player.exp
+    elif player.exp > 2000 and player.exp < 3000:
+        player.lvl = 6
+        player.Rexp = 3000 - player.exp
+    elif player.exp > 3000 and player.exp < 4100:
+        player.lvl = 7
+        player.Rexp = 4100 - player.exp
+    elif player.exp > 4100 and player.exp < 5400:
+        player.lvl = 8
+        player.Rexp = 5400 - player.exp
+    elif player.exp > 5400 and player.exp < 7000:
+        player.lvl = 9
+        player.Rexp = 7000 - player.exp
+    elif player.exp > 7000:
+        player.lvl = 10
+        player.Rexp = 0
     if lastlvl != player.lvl:
+        if player.lvl == 10:
+            Type("You have reached the highest level - Well done!")
         Type("You have leveled up!")
         Type("You regain full health!!!")
         MaxHp(player)
@@ -193,7 +236,8 @@ def Attack(player,mob):
     else:
         pass
 
-def Randomise(player): 
+def Randomise(player):
+    player.location.Last1 = '.'
     if player.location == MainCity:
         a = random.randint(1,10)
         if a > 0 and a < 6: #Cheap Item
@@ -211,10 +255,25 @@ def Randomise(player):
                 Type("You found a half drunk potion!")
                 Check_Full(player,"Half Drunk Potion")
         elif a >= 6 and a < 9: #Ambush
-            Type("Some Goblins Ambushed you!")
             global last_loc
             last_loc = MainCity
-            player.Combat(['Goblin1','Goblin2'],{'Goblin1':'$','Goblin2':'#','$':Fight},{'$':'Goblin1','#':'Goblin2'})
+            b = random.randint(1,4)
+            if b == 1:
+                Type("A Goblin Ambushed you!")
+                player.Combat(['Goblin1'],{'Goblin1':'$','$':Fight},{'$':'Goblin1'})
+            elif b == 2:
+                Type("A Slime Ambushed you!")
+                player.Combat(['Slime1'],{'Slime1':'$','$':Fight},{'$':'Slime1'})
+            elif b == 3:
+                Type("A couple of summons ambushed you!")
+                c = random.randint(1,2)
+                if c == 2:
+                    player.Combat(['Slime1','Slime2','Goblin3'],{'Slime1':'$','Slime2':'#','Goblin3':'%','$':Fight},{'$':'Slime1','#':'Slime2','%':'Goblin3'})
+                elif c == 1:
+                    player.Combat(['Slime1','Goblin2','Goblin3'],{'Slime1':'$','Goblin2':'#','Goblin3':'%','$':Fight},{'$':'Slime1','#':'Goblin2','%':'Goblin3'})
+            elif b == 4:
+                Type("Two summons have ambushed you!")
+                player.Combat(['Goblin1','Slime2'],{'Goblin1':'$','Slime2':'#','$':Fight},{'$':'Goblin1','#':'Slime2'})
         elif a >= 9: #Rare
             Type("You found something rare!")
             b = random.randint(1,10)
@@ -230,7 +289,8 @@ def Randomise(player):
             elif b == 10:
                 Type("You found a simple potion!")
                 Check_Full(player,"Simple Potion")
-
+    elif player.location == TenjaPath:
+        pass
 class Shop:
     def __init__(shop,stock,stockmapper):
         shop.stock = stock
@@ -417,6 +477,15 @@ class Stats:
             elif i == 'Guard':
                 Guard1 = GuardE('Guard')
                 At.append(Guard1)
+            elif i == 'Slime1':
+                Slime1 = Slime('Slime1')
+                At.append(Slime1)
+            elif i == 'Slime2':
+                Slime2 = Slime('Slime2')
+                At.append(Slime2)
+            elif i == 'Slime3':
+                Slime3 = Slime('Slime3')
+                At.append(Slime3)
         Combat.Update(self)
         while Enemies != []:
             self.location.mapper[self.location.l_y][self.location.l_x] = self.location.Last1
@@ -533,14 +602,23 @@ class Stats:
                         elif self.location.fmap['$'] == 'Guard':
                             info(self.location.py_y,self.location.py_x,self,Guard1,Enemies)
                             Attack(self,Guard1)
+                        elif self.location.fmap['$'] == 'Slime1':
+                            info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
+                            Attack(self,Slime1)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                         if self.location.fmap['#'] == 'Goblin2':
                             info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
                             Attack(self,Gob2)
+                        elif self.location.fmap['#'] == 'Slime2':
+                            info(self.location.py_y,self.location.py_x,self,Slime2,Enemies)
+                            Attack(self,Slime2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
                         if self.location.fmap['%'] == 'Goblin3':
                             info(self.location.py_y,self.location.py_x,self,Gob3,Enemies)
                             Attack(self,Gob3)
+                        elif self.location.fmap['%'] == 'Slime3':
+                            info(self.location.py_y,self.location.py_x,self,Slime3,Enemies)
+                            Attack(self,Slime3)
                     self.location.py_y += 1
                     continue
                 else:
@@ -562,14 +640,23 @@ class Stats:
                         elif self.location.fmap['$'] == 'Guard':
                             info(self.location.py_y,self.location.py_x,self,Guard1,Enemies)
                             Attack(self,Guard1)
+                        elif self.location.fmap['$'] == 'Slime1':
+                            info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
+                            Attack(self,Slime1)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                         if self.location.fmap['#'] == 'Goblin2':
                             info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
                             Attack(self,Gob2)
+                        elif self.location.fmap['#'] == 'Slime2':
+                            info(self.location.py_y,self.location.py_x,self,Slime2,Enemies)
+                            Attack(self,Slime2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
                         if self.location.fmap['%'] == 'Goblin3':
                             info(self.location.py_y,self.location.py_x,self,Gob3,Enemies)
                             Attack(self,Gob3)
+                        elif self.location.fmap['%'] == 'Slime3':
+                            info(self.location.py_y,self.location.py_x,self,Slime3,Enemies)
+                            Attack(self,Slime3)
                     self.location.py_y -= 1
                     continue
                 else:
@@ -591,14 +678,23 @@ class Stats:
                         elif self.location.fmap['$'] == 'Guard':
                             info(self.location.py_y,self.location.py_x,self,Guard1,Enemies)
                             Attack(self,Guard1)
+                        elif self.location.fmap['$'] == 'Slime1':
+                            info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
+                            Attack(self,Slime1)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                         if self.location.fmap['#'] == 'Goblin2':
                             info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
                             Attack(self,Gob2)
+                        elif self.location.fmap['#'] == 'Slime2':
+                            info(self.location.py_y,self.location.py_x,self,Slime2,Enemies)
+                            Attack(self,Slime2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
                         if self.location.fmap['%'] == 'Goblin3':
                             info(self.location.py_y,self.location.py_x,self,Gob3,Enemies)
                             Attack(self,Gob3)
+                        elif self.location.fmap['%'] == 'Slime3':
+                            info(self.location.py_y,self.location.py_x,self,Slime3,Enemies)
+                            Attack(self,Slime3)
                     self.location.py_x += 1
                     continue
                 else:
@@ -620,14 +716,23 @@ class Stats:
                         elif self.location.fmap['$'] == 'Guard':
                             info(self.location.py_y,self.location.py_x,self,Guard1,Enemies)
                             Attack(self,Guard1)
+                        elif self.location.fmap['$'] == 'Slime1':
+                            info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
+                            Attack(self,Slime1)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                         if self.location.fmap['#'] == 'Goblin2':
                             info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
                             Attack(self,Gob2)
+                        elif self.location.fmap['#'] == 'Slime2':
+                            info(self.location.py_y,self.location.py_x,self,Slime2,Enemies)
+                            Attack(self,Slime2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
                         if self.location.fmap['%'] == 'Goblin3':
                             info(self.location.py_y,self.location.py_x,self,Gob3,Enemies)
                             Attack(self,Gob3)
+                        elif self.location.fmap['%'] == 'Slime3':
+                            info(self.location.py_y,self.location.py_x,self,Slime3,Enemies)
+                            Attack(self,Slime3)
                     self.location.py_x -= 1
                     continue
                 else:
@@ -773,6 +878,26 @@ class Stats:
                     info(self)
                     self.location.py_y += 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "£": 
+                    info = self.location.emap['£']
+                    info(self)
+                    self.location.py_y += 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$": 
+                    info = self.location.emap['$']
+                    info(self)
+                    self.location.py_y += 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "%": 
+                    info = self.location.emap['%']
+                    info(self)
+                    self.location.py_y += 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "!": 
+                    info = self.location.emap['!']
+                    info(self)
+                    self.location.py_y += 1
+                    continue
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -798,6 +923,26 @@ class Stats:
                     info(self)
                     self.location.py_y -= 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "£": 
+                    info = self.location.emap['£']
+                    info(self)
+                    self.location.py_y -= 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$": 
+                    info = self.location.emap['$']
+                    info(self)
+                    self.location.py_y -= 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "%": 
+                    info = self.location.emap['%']
+                    info(self)
+                    self.location.py_y -= 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "!": 
+                    info = self.location.emap['!']
+                    info(self)
+                    self.location.py_y -= 1
+                    continue
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -820,6 +965,26 @@ class Stats:
                         self.location = info
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "&": 
                     info = self.location.emap['&']
+                    info(self)
+                    self.location.py_x += 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "£": 
+                    info = self.location.emap['£']
+                    info(self)
+                    self.location.py_x += 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "$": 
+                    info = self.location.emap['$']
+                    info(self)
+                    self.location.py_x += 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "%": 
+                    info = self.location.emap['%']
+                    info(self)
+                    self.location.py_x += 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "!": 
+                    info = self.location.emap['!']
                     info(self)
                     self.location.py_x += 1
                     continue
@@ -1104,8 +1269,8 @@ def Weapons_Shop(player): # Harley
         for x,i in enumerate(Harley.stock):
             print(f"{x} - {i} costs {Harley.mapper[i]} Gold")
         Type("[Harley]: Which would you like?")
-        num = int(input("Enter the Number. > "))
         try:
+            num = int(input("Enter the Number. > "))
             a = player.gold - Harley.mapper[Harley.stock[num]]
             if a < 0:
                 Type("[Harley]: You're short. Come back when you have enough gold.")
@@ -1122,8 +1287,8 @@ def Weapons_Shop(player): # Harley
         list = ['Fire Amulet','Ice Amulet','Cool Amulet','Hot Amulet']
         for i,x in enumerate(list):
             print(f"{i} - {x}")
-        num = int(input("Enter the Number. > "))
         try:
+            num = int(input("Enter the Number. > "))
             a = list[num]
             if a == 'Fire Amulet':
                 if 'Fire Amulet' not in player.inv or 'Fire Gem' not in player.inv:
@@ -1184,8 +1349,8 @@ def Weapons_Shop(player): # Harley
         list = ['Sword','Dagger','Axe','Fire Gem','Ice Gem','Cool Gem','Clear Gem','Refined Clear Gem']
         for i,x in enumerate(list):
             print(f"{i} - {x}")
-        num = int(input("Enter the Number. > "))
         try:
+            num = int(input("Enter the Number. > "))
             a = list[num]
             if a == 'Sword':
                 if 'Sword' not in player.inv or 'Clear Gem' not in player.inv:
@@ -1383,8 +1548,8 @@ def Conversion(player): #Dhara
         Type("[Dhara]: Select an item! The prices are set as seen, no-one else here does exchanges.")
         for x,i in enumerate(Dhara.stock):
             print(f"{x} - {i} for {Dhara.mapper[i]} Gold")
-        num = int(input("Enter the Number. > "))
         try:
+            num = int(input("Enter the Number. > "))
             if Dhara.stock[num] == 'Gold':
                 Type("[Dhara]: How much gold do you want to exchange?")
                 num = int(input("Enter the Number. > "))
@@ -1533,8 +1698,8 @@ def Potion_Geek(player):# Marina
         for x,i in enumerate(Marina.stock):
             print(f"{x} - {i} costs {Marina.mapper[i]} Gold")
         Type("[Marina]: Which would you like?")
-        num = int(input("Enter the Number. > "))
         try:
+            num = int(input("Enter the Number. > "))
             a = player.gold - Marina.mapper[Marina.stock[num]]
             if a < 0:
                 Type("[Marina]: Sell me some of your items, then maybe you'll have enough gold?")
@@ -1547,9 +1712,9 @@ def Potion_Geek(player):# Marina
     elif key == 's':
         Type("[Marina]: Ooooooh! What have you brought for me? I'll buy anything you found here off you.")
         for x,i in enumerate(Marina2.stock):
-            print(f"{x} - {i} for {Marina2.mapper[i]} Gold")
-        num = int(input("Enter the Number. > "))
+            print(f"{x} - {Marina2.mapper[i]} Gold for {i}")
         try:
+            num = int(input("Enter the Number. > "))
             if Marina2.stock[num] in player.inv:
                 Type("[Marina]: Nice, I can add this to my collection! I'm sure I can make a potion from this.")
                 player.inv.remove(Marina2.stock[num])
@@ -1559,7 +1724,20 @@ def Potion_Geek(player):# Marina
         except:
             Type("[Marina]: That doesn't exist... Is that something useful from your land?")
 
+def Looting_Tutorial(player):
+    pass
 
+def Other_Vistor(player):
+    pass
+
+def Pre_Boss_Fight(player):
+    pass
+
+TenjaPath = Area("Tenja Path",[['#','#','#','#','#','#','#','#','#','#','#','#','#'],
+ ['#','.','.','~','.','.','~','.','.','~','.','%','|'], #%; four slimes
+ ['#','?','~','.','~','.','','~','.','.','~','.','#'], #?; Kai
+ ['#','.','.','.','.','~','.','.','~','.','.','~','#'],
+ ['#','_','#','#','#','#','#','#','#','#','#','#','#']],'.',1,4,{'|':''})
 MainCity = Area("Main City",[["#","_","#","^","#","-","#","#"],
         ["#",".",".",".",".",".",".","#"],
         ["#",".","£","~","~","%",".","#"],
@@ -1570,7 +1748,8 @@ Tut = Area("Dock",[["#","#","#","#","#"],
         ["#",".",".","&","#"],
         ["#",".",".",".","|"],
         ["#","#","#","#","#"]],'.',1,1,{'|':MainCity,'&':Amb})
-MainCity.emap = {'|':Tut,'&':Guard,'£':Weapons_Shop,'$':Conversion,'!':Shady_Merchant,'%':Potion_Geek}
+MainCity.emap = {'|':Tut,'&':Guard,'£':Weapons_Shop,'$':Conversion,'!':Shady_Merchant,'%':Potion_Geek,'_':TenjaPath}
+TenjaPath.emap = {'|':MainCity,'_':MainCity,'?':Other_Vistor,'%':Pre_Boss_Fight}
 
 '''
 player1 = Stats('',10,1,0,100,1,Tut,[],0,'','','',[],'',['Gob'],10)

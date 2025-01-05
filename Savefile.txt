@@ -1,1 +1,1 @@
-MainCity¬100000000000¬100000000¬25¬25¬1¬wKin¬["Refined Clear Gem", "Hot Amulet"]¬9999999999700¬1¬¬¬["Ruin Hunter"]¬["Defeat Tenja"]¬["Help1", "Help2", "Gob", "Amb2", "Wep", "Help3", "Con", "Pot", "Joined", "Shad", "Tenja", "Solve"]¬10
+MainCity¬30¬2¬85¬215¬1¬wKin¬["Refined Clear Gem", "Hot Amulet", "Slime Goo", "Clear Gem", "Clear Gem", "Fire Gem Ore", "Goblin Ear", "Frying Pan"]¬9999999999721¬15¬¬¬["Ruin Hunter"]¬["Defeat Tenja"]¬["Help1", "Help2", "Gob", "Amb2", "Wep", "Help3", "Con", "Pot", "Joined", "Shad", "Tenja", "Solve"]¬30
