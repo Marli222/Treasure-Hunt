@@ -120,6 +120,8 @@ def Save(player1):
         player1.location = 'Tut'
     elif player1.location == MainCity:
         player1.location = 'MainCity'
+    elif player1.location == TenjaPath:
+        player1.location = 'TenjaPath'
     list1 = json.dumps(player1.inv) 
     list2 = json.dumps(player1.compq)
     list3 = json.dumps(player1.cuts)
@@ -140,11 +142,12 @@ def Save(player1):
 def LoadGame():
     load = open("Savefile.txt","r")
     loc = (load.readline()).split("¬")
-    print(loc)
     if loc[0] == 'MainCity':
         loc[0] = MainCity
     elif loc[0] == 'Tut':
         loc[0] = Tut
+    elif loc[0] == 'TenjaPath':
+        loc[0] = TenjaPath
     if loc[7] == '[]':
         loc[7] = []
     else:
@@ -205,13 +208,13 @@ def Fight(y,x,player,target,all):
                 print(f"{target.name} is about to meet a magical demise! {player.name} dealt {a} damage!")
                 player.beat.char -= 1
         if player.beat.name == 'Fist':
-            a = player.atk + player.wpatk
+            a += player.atk + player.wpatk
             print(f"You punched {target.name}! {player.name} dealt {a} damage!")
-        elif player.beat.name == 'Tiny Knife' or player.beat.name == 'Sword' or player.beat.name == 'Enhanced_Sword' or player.beat.name == 'Dagger' or player.beat.name == 'Enhanced_Dagger':
-            a = player.atk + player.wpatk
+        elif player.beat.name == 'Tiny Knife' or player.beat.name == 'Sword' or player.beat.name == 'Enhanced Sword' or player.beat.name == 'Dagger' or player.beat.name == 'Enhanced Dagger':
+            a += player.atk + player.wpatk
             print(f"You stabbed {target.name}! {player.name} dealt {a} damage!")
         elif player.beat.name == 'Axe' or player.beat.name == 'Enhanced Axe':
-            a = player.atk + player.wpatk
+            a += player.atk + player.wpatk
             print(f"You punched {target.name}! {player.name} dealt {a} damage!")
     else:
         print(f"{target.name} dodged your attack.")
@@ -257,6 +260,47 @@ def Randomise(player):
         elif a >= 6 and a < 9: #Ambush
             global last_loc
             last_loc = MainCity
+            b = random.randint(1,2)
+            if b == 1:
+                Type("A Goblin Ambushed you!")
+                player.Combat(['Goblin1'],{'Goblin1':'$','$':Fight},{'$':'Goblin1'})
+            elif b == 2:
+                Type("Two summons have ambushed you!")
+                player.Combat(['Goblin1','Goblin2'],{'Goblin1':'$','Goblin2':'#','$':Fight},{'$':'Goblin1','#':'Goblin2'})
+        elif a >= 9: #Rare
+            Type("You found something rare!")
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found a Clear Gem & Gold!")
+                Check_Full(player,"Clear Gem")
+                player.gold += 5
+            elif b >= 4 and b < 7:
+                Type("You found Refined Clear Gem!")
+                Check_Full(player,"Refined Clear Gem")
+            elif b >= 7 and b < 10:
+                Type("You found a Fire Gem Ore!")
+                Check_Full(player,"Fire Gem Ore")
+            elif b == 10:
+                Type("You found a simple potion!")
+                Check_Full(player,"Simple Potion")
+    elif player.location == TenjaPath:
+        a = random.randint(1,10)
+        if a > 0 and a < 6: #Cheap Item
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found a Frying Pan!")
+                Check_Full(player,"Frying Pan")
+            elif b >= 4 and b < 7:
+                Type("You found Worn Boots!")
+                Check_Full(player,"Worn Boots")
+            elif b >= 7 and b < 10:
+                Type("You found a Clear Gem!")
+                Check_Full(player,"Clear Gem")
+            elif b == 10:
+                Type("You found a half drunk potion!")
+                Check_Full(player,"Half Drunk Potion")
+        elif a >= 6 and a < 9: #Ambush
+            last_loc = TenjaPath
             b = random.randint(1,4)
             if b == 1:
                 Type("A Goblin Ambushed you!")
@@ -289,8 +333,6 @@ def Randomise(player):
             elif b == 10:
                 Type("You found a simple potion!")
                 Check_Full(player,"Simple Potion")
-    elif player.location == TenjaPath:
-        pass
 class Shop:
     def __init__(shop,stock,stockmapper):
         shop.stock = stock
@@ -309,7 +351,7 @@ Hot = Weapons('Hot Amulet',15,0)
 class Goblin:
     def __init__(mob,name):
         mob.name = name
-        mob.hp = 15
+        mob.hp = 7
         mob.atk = 1
         mob.exp = 5
         mob.gold = 2
@@ -319,18 +361,18 @@ class Goblin:
 class Slime:
     def __init__(mob,name):
         mob.name = name
-        mob.hp = 30
+        mob.hp = 15
         mob.atk = 1
         mob.exp = 7
         mob.gold = 3
-        mob.ran = [1,4]
+        mob.ran = [1,3]
         mob.drops = 'Slime Goo'
 
 class Sprite:
     def __init__(mob,name):
         mob.name = name
         mob.hp = 30
-        mob.atk = 3
+        mob.atk = 2
         mob.exp = 10
         mob.gold = 3
         mob.ran = [1,5]
@@ -406,7 +448,7 @@ class XFollower:
         mob.ran = [1,9]
         mob.drops = 'Spicy Potion'
 
-class TGuardian:
+class XGuardian:
     def __init__(mob,name):
         mob.name = name
         mob.hp = 60
@@ -806,7 +848,7 @@ class Stats:
                 Exp(self)
                 MaxHp(self)
                 Type(f"{self.name} - at the {self.location.name}")
-                Type(f"Hp: {self.hp}")
+                Type(f"Hp: {self.hp}/{self.maxhp}")
                 Type(f"Lvl: {self.lvl}")
                 Type(f"{self.Rexp} exp is required to level up!")
                 Type(f"Gold: {self.gold}")
@@ -893,11 +935,30 @@ class Stats:
                     info(self)
                     self.location.py_y += 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "?": 
+                    info = self.location.emap['?']
+                    info(self)
+                    self.location.py_y += 1
+                    continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "!": 
                     info = self.location.emap['!']
                     info(self)
                     self.location.py_y += 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "^": 
+                    info = self.location.emap['^']
+                    self.location = info
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "_":
+                    if 'Kai' not in self.cuts:
+                        Looting_Tutorial(self)
+                        self.location.py_y += 1
+                        continue
+                    else:
+                        info = self.location.emap['_']
+                        self.location = info
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "-": 
+                    info = self.location.emap['-']
+                    self.location = info
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -938,11 +999,25 @@ class Stats:
                     info(self)
                     self.location.py_y -= 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "?": 
+                    info = self.location.emap['?']
+                    info(self)
+                    self.location.py_y -= 1
+                    continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "!": 
                     info = self.location.emap['!']
                     info(self)
                     self.location.py_y -= 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "^": 
+                    info = self.location.emap['^']
+                    self.location = info
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "_": 
+                    info = self.location.emap['_']
+                    self.location = info
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "-": 
+                    info = self.location.emap['-']
+                    self.location = info
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -983,11 +1058,25 @@ class Stats:
                     info(self)
                     self.location.py_x += 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "?": 
+                    info = self.location.emap['?']
+                    info(self)
+                    self.location.py_x += 1
+                    continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "!": 
                     info = self.location.emap['!']
                     info(self)
                     self.location.py_x += 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "^": 
+                    info = self.location.emap['^']
+                    self.location = info
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "_": 
+                    info = self.location.emap['_']
+                    self.location = info
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "-": 
+                    info = self.location.emap['-']
+                    self.location = info
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -1028,6 +1117,11 @@ class Stats:
                     info(self)
                     self.location.py_x -= 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "?": 
+                    info = self.location.emap['?']
+                    info(self)
+                    self.location.py_x -= 1
+                    continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "!": 
                     info = self.location.emap['!']
                     info(self)
@@ -1035,19 +1129,13 @@ class Stats:
                     continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "^": 
                     info = self.location.emap['^']
-                    info(self)
-                    self.location.py_x -= 1
-                    continue
+                    self.location = info
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "_": 
                     info = self.location.emap['_']
-                    info(self)
-                    self.location.py_x -= 1
-                    continue
+                    self.location = info
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "-": 
                     info = self.location.emap['-']
-                    info(self)
-                    self.location.py_x -= 1
-                    continue
+                    self.location = info
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -1092,7 +1180,7 @@ class Combat_Area(Area):
             v = 'None'
         else:
             v = player.beat.name
-        print(f'HP: {player.hp}\nEQUIPPED WEAPON: {v}\nITEMS: {x}')
+        print(f'HP: {player.hp}/{player.maxhp}\nEQUIPPED WEAPON: {v}\nITEMS: {x}')
 
 def Tut_Fight(player):
     os.system('cls')
@@ -1205,7 +1293,7 @@ def Guard(player):
     else:
         Type(f"[{player.name}]: Oh. Sorry, I'll leave.")
 
-Harley = Shop(['Sword','Dagger','Axe'],{'Sword':30,'Dagger':10,'Axe':50})
+Harley = Shop(['Sword','Dagger','Axe'],{'Sword':40,'Dagger':15,'Axe':70})
 
 def Weapons_Shop(player): # Harley
     if 'Wep' not in player.cuts:
@@ -1394,7 +1482,7 @@ def Weapons_Shop(player): # Harley
                 if 'Axe' not in player.inv or 'Clear Gem' not in player.inv:
                     Type("[Harley]: You don't have the required materials.")
                 else:
-                    Type("[Harley]: I've got an idea! I could enhance this dagger with a gem! I require 10 Gold. (y/n)")
+                    Type("[Harley]: I've got an idea! I could enhance this axe with a gem! I require 10 Gold. (y/n)")
                     key = readchar.readkey()
                     if key == 'y':
                         num = 5
@@ -1677,7 +1765,7 @@ def Shady_Merchant(player):# Taylor the Ruin Hunter
         Type("[???]: Didn't I tell you to get lost? Beat it.")
 
 Marina = Shop(['Simple Potion','Spicy Potion','Nasty Potion'],{'Simple Potion':10,'Spicy Potion':20,'Nasty Potion':50})
-Marina2 = Shop(['Glowing Skull','Troll Nail','Sprite Essence','Slime Goo','Goblin Ear','Frying Pan','Worn Boots','Simple Potion','Spicy Potion','Nasty Potion','Clear Gem','Refined Clear Gem','Fire Gem Ore','Fire Gem','Ice Gem Ore','Ice Gem','Cool Gem Ore','Cool Gem','Fire Amulet','Ice Amulet','Cool Amulet','Hot Amulet','Axe','Sword','Dagger','Tiny Knife','Enhanced Dagger','Enhanced Axe','Enhanced Sword'],{'Glowing Skull':100,'Troll Nail':70,'Sprite Essence':50,'Slime Goo':20,'Goblin Ear':10,'Frying Pan':1,'Worn Boots':1,'Simple Potion':10,'Spicy Potion':20,'Nasty Potion':30,'Clear Gem':1,'Refined Clear Gem':5,'Fire Gem Ore':5,'Fire Gem':10,'Ice Gem Ore':15,'Ice Gem':20,'Cool Gem Ore':30,'Cool Gem':40,'Fire Amulet':10,'Ice Amulet':20,'Cool Amulet':30,'Hot Amulet':50,'Axe':30,'Sword':20,'Dagger':10,'Tiny Knife':5,'Enhanced Dagger':20,'Enhanced Axe':60,'Enhanced Sword':40})
+Marina2 = Shop(['Glowing Skull','Troll Nail','Sprite Essence','Slime Goo','Goblin Ear','Frying Pan','Worn Boots','Simple Potion','Spicy Potion','Nasty Potion','Clear Gem','Refined Clear Gem','Fire Gem Ore','Fire Gem','Ice Gem Ore','Ice Gem','Cool Gem Ore','Cool Gem','Fire Amulet','Ice Amulet','Cool Amulet','Hot Amulet','Axe','Sword','Dagger','Tiny Knife','Enhanced Dagger','Enhanced Axe','Enhanced Sword'],{'Glowing Skull':50,'Troll Nail':35,'Sprite Essence':25,'Slime Goo':15,'Goblin Ear':5,'Frying Pan':1,'Worn Boots':1,'Simple Potion':10,'Spicy Potion':20,'Nasty Potion':30,'Clear Gem':1,'Refined Clear Gem':5,'Fire Gem Ore':5,'Fire Gem':10,'Ice Gem Ore':15,'Ice Gem':20,'Cool Gem Ore':30,'Cool Gem':40,'Fire Amulet':10,'Ice Amulet':20,'Cool Amulet':30,'Hot Amulet':50,'Axe':30,'Sword':20,'Dagger':10,'Tiny Knife':5,'Enhanced Dagger':20,'Enhanced Axe':60,'Enhanced Sword':40})
 def Potion_Geek(player):# Marina
     if 'Pot' not in player.cuts:
         Type("[???]: Hello, you're a vistor aren't you? What's your name?")
@@ -1725,19 +1813,105 @@ def Potion_Geek(player):# Marina
             Type("[Marina]: That doesn't exist... Is that something useful from your land?")
 
 def Looting_Tutorial(player):
-    pass
+    os.system('cls')
+    commap = [["#","_","#","^","#","-","#","#"],
+        ["#","?",".",".",".",".",".","#"],
+        ["#","@","£","~","~","%",".","#"],
+        ["#",".","$","~","~","!",".","#"],
+        ["|",".",".",".",".",".","&","}"],
+        ["#","#","#","#","#","#","#","#"]]
+    for row in commap:
+            print(' '.join(map(str, row)))
+    Type(f"[???]: Oh! Sorry, I didn't mean to bump into you. Are you ok? (y/n)")
+    key = readchar.readkey()
+    if key == 'y':
+        Type(f"[{player.name}]: Yes, I'm fine. Are you?")
+        Type("[Kai]: I am. My name is Kai by the way. I haven't seen you around so you must be a vistor too right? (y/n)")
+        key = readchar.readkey()
+        if key == 'y':
+            Type(f"[{player.name}]: Yes, I just got here today. What were you doing past there?")
+            Type("[Kai]: I was excavating and found some cool gems! They shimmer because of the magic they contain!")
+            Type("[Kai]: Amazing right! I can see some here in the square but I won't mind if you investigate them instead?")
+            Type(f"[{player.name}]: Investigate?")
+            Type("[Kai]: Hunt, Loot... Just find small treasures to take back to Earth you know.")
+        if key == 'n':
+            Type(f"[{player.name}]: No? I've lived here my whole life.")
+            Type("[Kai]: Really? I had a feeling you were... Nevermind. Still indulge me in some conversation.")
+            Type("[Kai]: I haven't looked around the City Square, maybe there is something rare to be found?")
+    else:
+        Type(f"[{player.name}]: No! That hurt...")
+        Type(f"[???]: I'm really sorry then! Here have something interesting I found in the wildlife.")
+        Type(f"[???]: I know it doesn't make up for it but I've collected a lot of these already.")
+        Type(f"You obtained a Clear Gem!")
+        Check_Full(player,"Clear Gem")
+        Type("[Kai]: If you couldn't tell I'm a vistor... I was investigating the area above.")
+        Type("[Kai]: I was going to loot here as well but I'll leave that to you.")
+    Type("[Kai]: I'll tell you what. Meet me up here once you've investigated the City Square. I'll have something for you!")
+    Type("NEW QUEST!\n>>>Loot the Main City<<<")
+    Type("[Tutorial]: Click 'e' when on a '~' tile to investigate the area.")
+    player.curq.append('Invest Tutorial')
+    player.cuts.append("Kai")
 
 def Other_Vistor(player):
-    pass
+    if '~' in MainCity.mapper[3] or '~' in MainCity.mapper[4]:
+        Type("[Kai]: Oh, did you really investigate the City Square or did you walk back here behind me?")
+    else:
+        if 'Invest Tutorial' not in player.compq:
+            Type("[Kai]: Hey! You came to meet me - nice!\n[Kai]: And you even loot- I mean investigated the City Square!\n[Kai]: As promised I have something for you...")
+            Type("QUEST COMPLETED!")
+            Type(">>>Loot the City Square<<<")
+            Type("Reward: 20 exp, Half Full Potion")
+            player.curq.remove('Invest Tutorial')
+            player.compq.append("Invest Tutorial")
+            player.exp += 20
+            Check_Full(player,"Half Drunk Potion")
+            Exp(player)
+            MaxHp(player)
+        if "Goblin Ear" not in player.curq:
+            Type("[Kai]: You know, I've been struggling with a problem.")
+            Type("[Kai]: Could you help? If you do I'll give you something else useful! (y/n)")
+            key = readchar.readkey()
+            if key == 'y':
+                Type("[Kai]: Great! I've been trying to get a Goblin Ear to analyse but I'm finding it difficult to defeat those summons.")
+                Type("[Kai]: Could you get me a Goblin Ear?")
+                Type("[Kai]: I suggest you go to Harley to buy/craft a stronger weapon.")
+                Type("Find out more? (y/n)")
+                key = readchar.readkey()
+                if key == 'y':
+                    Type("[Tutorial]: Talk to Harley '£' in the Main City to buy a stronger weapon.")
+                    Type("[Tutorial]: Click 'c' when talking to Harley to craft - which can increase weapon strength.")
+                    Type("[Tutorial]: If you don't have Gold, sell useless items to Marina...")
+                player.curq.append("Goblin Ear")
+            else:
+                Type("[Kai]: That's ok. If you change your mind I'll be here waiting!")
+        if "Goblin Ear" not in player.inv and "Goblin Ear" in player.curq:
+            Type("[Kai]: Do you have it? No? Oh, there are Goblins around here so you can find it!")
+        if "Goblin Ear" in player.inv:
+            Type("[Kai]: You got it for me! Thanks.")
+            Type("[Kai]: As promised I have this for you...")
+            Type("[Kai]: I'll see you around then!")
+            TenjaPath.mapper[2][1] = '~'
+            Type("QUEST COMPLETED!")
+            Type(">>>Fetch Goblin Ear<<<")
+            Type("Reward: 50 exp, Simple Potion")
+            player.curq.remove('Goblin Ear')
+            player.inv.remove('Goblin Ear')
+            player.compq.append("Goblin Ear")
+            player.exp += 50
+            Check_Full(player,"Simple Potion")
+            Exp(player)
+            MaxHp(player)
+
+        
 
 def Pre_Boss_Fight(player):
     pass
 
 TenjaPath = Area("Tenja Path",[['#','#','#','#','#','#','#','#','#','#','#','#','#'],
  ['#','.','.','~','.','.','~','.','.','~','.','%','|'], #%; four slimes
- ['#','?','~','.','~','.','','~','.','.','~','.','#'], #?; Kai
+ ['#','?','~','.','~','.','.','~','.','.','~','.','#'], #?; Kai
  ['#','.','.','.','.','~','.','.','~','.','.','~','#'],
- ['#','_','#','#','#','#','#','#','#','#','#','#','#']],'.',1,4,{'|':''})
+ ['#','_','#','#','#','#','#','#','#','#','#','#','#']],'.',1,3,{'|':''})
 MainCity = Area("Main City",[["#","_","#","^","#","-","#","#"],
         ["#",".",".",".",".",".",".","#"],
         ["#",".","£","~","~","%",".","#"],
