@@ -35,7 +35,7 @@ def MaxHp(player):
     if player.lvl == 1:
         player.maxhp = 10
     elif player.lvl == 2:
-        player.maxhp = 30
+        player.maxhp = 20
     elif player.lvl == 3:
         player.maxhp = 50
     elif player.lvl == 4:
@@ -122,6 +122,8 @@ def Save(player1):
         player1.location = 'MainCity'
     elif player1.location == TenjaPath:
         player1.location = 'TenjaPath'
+    elif player1.location == TenjaTemple:
+        player1.location = 'TenjaTemple'
     list1 = json.dumps(player1.inv) 
     list2 = json.dumps(player1.compq)
     list3 = json.dumps(player1.cuts)
@@ -132,7 +134,9 @@ def Save(player1):
     smap = open("Savemap,txt",'w')
     Map1 = json.dumps(Tut.mapper)
     Map2 = json.dumps(MainCity.mapper)
-    smap.write(f"{Map1}¬{Map2}")
+    Map3 = json.dumps(TenjaPath.mapper)
+    Map4 = json.dumps(TenjaTemple.mapper)
+    smap.write(f"{Map1}¬{Map2}¬{Map3}¬{Map4}")
     smap.close()
     schar = open("Savechar.txt",'w')
     schar.write(f"{Fire.char}¬{Ice.char}¬{Cool.char}¬{Hot.char}")
@@ -148,6 +152,8 @@ def LoadGame():
         loc[0] = Tut
     elif loc[0] == 'TenjaPath':
         loc[0] = TenjaPath
+    elif loc[0] == 'TenjaTemple':
+        loc[0] = TenjaTemple
     if loc[7] == '[]':
         loc[7] = []
     else:
@@ -171,6 +177,8 @@ def LoadGame():
     loc2 = (load2.readline()).split("¬")
     Tut.mapper = convert(loc2[0])
     MainCity.mapper = convert(loc2[1])
+    TenjaPath.mapper = convert(loc2[2])
+    TenjaTemple.mapper = convert(loc2[3])
     load3 = open("Savechar.txt",'r')
     loc3 = (load3.readline()).split("¬")
     Fire.char = int(loc3[0])
@@ -401,21 +409,21 @@ class Lich:
 class TFollower:
     def __init__(mob,name):
         mob.name = name
-        mob.hp = 60
-        mob.atk = 5
-        mob.exp = 20
+        mob.hp = 20
+        mob.atk = 1
+        mob.exp = 10
         mob.gold = 3
-        mob.ran = [1,9]
+        mob.ran = [1,5]
         mob.drops = 'Half Drunk Potion'
 
 class TGuardian:
     def __init__(mob,name):
         mob.name = name
-        mob.hp = 60
-        mob.atk = 5
+        mob.hp = 30
+        mob.atk = 2
         mob.exp = 20
-        mob.gold = 3
-        mob.ran = [1,9]
+        mob.gold = 4
+        mob.ran = [1,5]
         mob.drops = 'Fire Gem'
 
 class MFollower:
@@ -528,6 +536,16 @@ class Stats:
             elif i == 'Slime3':
                 Slime3 = Slime('Slime3')
                 At.append(Slime3)
+            elif i == 'Tenja Follower 1':
+                TFollower1 = TFollower('Tenja Follower 1')
+                At.append(TFollower1)
+            elif i == 'Tenja Follower 2':
+                TFollower2 = TFollower('Tenja Follower 2')
+                At.append(TFollower2)
+            elif i == 'The Tenja Guardian':
+                TGuard = TGuardian('The Tenja Guardian')
+                At.append(TGuard)
+
         Combat.Update(self)
         while Enemies != []:
             self.location.mapper[self.location.l_y][self.location.l_x] = self.location.Last1
@@ -647,6 +665,9 @@ class Stats:
                         elif self.location.fmap['$'] == 'Slime1':
                             info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
                             Attack(self,Slime1)
+                        elif self.location.fmap['$'] == 'Tenja Follower 2':
+                            info(self.location.py_y,self.location.py_x,self,TFollower2,Enemies)
+                            Attack(self,TFollower2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                         if self.location.fmap['#'] == 'Goblin2':
                             info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
@@ -663,6 +684,17 @@ class Stats:
                             Attack(self,Slime3)
                     self.location.py_y += 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "+" or self.location.mapper[self.location.py_y][self.location.py_x] == "&":
+                    info = self.location.emap['+']
+                    if self.location.mapper[self.location.py_y][self.location.py_x] == "+":
+                        if self.location.fmap['+'] == 'The Tenja Guardian': 
+                            info(self.location.py_y,self.location.py_x,self,TGuard,Enemies)
+                            Attack(self,TGuard)
+                        #put rest of guradians here.
+                    elif self.location.mapper[self.location.py_y][self.location.py_x] == "&":
+                        if self.location.fmap['&'] == 'Tenja Follower 1': 
+                            info(self.location.py_y,self.location.py_x,self,TFollower1,Enemies)
+                            Attack(self,TFollower1)
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -685,6 +717,9 @@ class Stats:
                         elif self.location.fmap['$'] == 'Slime1':
                             info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
                             Attack(self,Slime1)
+                        elif self.location.fmap['$'] == 'Tenja Follower 2':
+                            info(self.location.py_y,self.location.py_x,self,TFollower2,Enemies)
+                            Attack(self,TFollower2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                         if self.location.fmap['#'] == 'Goblin2':
                             info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
@@ -701,6 +736,17 @@ class Stats:
                             Attack(self,Slime3)
                     self.location.py_y -= 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "+" or self.location.mapper[self.location.py_y][self.location.py_x] == "&":
+                    info = self.location.emap['+']
+                    if self.location.mapper[self.location.py_y][self.location.py_x] == "+":
+                        if self.location.fmap['+'] == 'The Tenja Guardian': 
+                            info(self.location.py_y,self.location.py_x,self,TGuard,Enemies)
+                            Attack(self,TGuard)
+                        #put rest of guradians here.
+                    elif self.location.mapper[self.location.py_y][self.location.py_x] == "&":
+                        if self.location.fmap['&'] == 'Tenja Follower 1': 
+                            info(self.location.py_y,self.location.py_x,self,TFollower1,Enemies)
+                            Attack(self,TFollower1)
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -723,6 +769,9 @@ class Stats:
                         elif self.location.fmap['$'] == 'Slime1':
                             info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
                             Attack(self,Slime1)
+                        elif self.location.fmap['$'] == 'Tenja Follower 2':
+                            info(self.location.py_y,self.location.py_x,self,TFollower2,Enemies)
+                            Attack(self,TFollower2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                         if self.location.fmap['#'] == 'Goblin2':
                             info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
@@ -739,6 +788,17 @@ class Stats:
                             Attack(self,Slime3)
                     self.location.py_x += 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "+" or self.location.mapper[self.location.py_y][self.location.py_x] == "&":
+                    info = self.location.emap['+']
+                    if self.location.mapper[self.location.py_y][self.location.py_x] == "+":
+                        if self.location.fmap['+'] == 'The Tenja Guardian': 
+                            info(self.location.py_y,self.location.py_x,self,TGuard,Enemies)
+                            Attack(self,TGuard)
+                        #put rest of guradians here.
+                    elif self.location.mapper[self.location.py_y][self.location.py_x] == "&":
+                        if self.location.fmap['&'] == 'Tenja Follower 1': 
+                            info(self.location.py_y,self.location.py_x,self,TFollower1,Enemies)
+                            Attack(self,TFollower1)
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -761,6 +821,9 @@ class Stats:
                         elif self.location.fmap['$'] == 'Slime1':
                             info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
                             Attack(self,Slime1)
+                        elif self.location.fmap['$'] == 'Tenja Follower 2':
+                            info(self.location.py_y,self.location.py_x,self,TFollower2,Enemies)
+                            Attack(self,TFollower2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "#":
                         if self.location.fmap['#'] == 'Goblin2':
                             info(self.location.py_y,self.location.py_x,self,Gob2,Enemies)
@@ -777,6 +840,17 @@ class Stats:
                             Attack(self,Slime3)
                     self.location.py_x -= 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "+" or self.location.mapper[self.location.py_y][self.location.py_x] == "&":
+                    info = self.location.emap['+']
+                    if self.location.mapper[self.location.py_y][self.location.py_x] == "+":
+                        if self.location.fmap['+'] == 'The Tenja Guardian': 
+                            info(self.location.py_y,self.location.py_x,self,TGuard,Enemies)
+                            Attack(self,TGuard)
+                        #put rest of guradians here.
+                    elif self.location.mapper[self.location.py_y][self.location.py_x] == "&":
+                        if self.location.fmap['&'] == 'Tenja Follower 1': 
+                            info(self.location.py_y,self.location.py_x,self,TFollower1,Enemies)
+                            Attack(self,TFollower1)
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -945,6 +1019,11 @@ class Stats:
                     info(self)
                     self.location.py_y += 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "+": 
+                    info = self.location.emap['+']
+                    info(self)
+                    self.location.py_y += 1
+                    continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "^": 
                     info = self.location.emap['^']
                     self.location = info
@@ -1009,6 +1088,11 @@ class Stats:
                     info(self)
                     self.location.py_y -= 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "+": 
+                    info = self.location.emap['+']
+                    info(self)
+                    self.location.py_y -= 1
+                    continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "^": 
                     info = self.location.emap['^']
                     self.location = info
@@ -1068,6 +1152,11 @@ class Stats:
                     info(self)
                     self.location.py_x += 1
                     continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "+": 
+                    info = self.location.emap['+']
+                    info(self)
+                    self.location.py_x += 1
+                    continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "^": 
                     info = self.location.emap['^']
                     self.location = info
@@ -1124,6 +1213,11 @@ class Stats:
                     continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "!": 
                     info = self.location.emap['!']
+                    info(self)
+                    self.location.py_x -= 1
+                    continue
+                elif self.location.mapper[self.location.py_y][self.location.py_x] == "+": 
+                    info = self.location.emap['+']
                     info(self)
                     self.location.py_x -= 1
                     continue
@@ -1901,12 +1995,55 @@ def Other_Vistor(player):
             Check_Full(player,"Simple Potion")
             Exp(player)
             MaxHp(player)
-
         
-
 def Pre_Boss_Fight(player):
-    pass
+    Type("[Slime1]: Vistors can not pass here.")
+    Type(f"[{player.name}]: You can talk?")
+    Type("[Slime2]: Vistors can not pass here.")
+    Type("Leave? (y/n)")
+    key = readchar.readkey()
+    if key == 'n':
+        Type("[Slime3]: Vistors can not pass here.")
+        TenjaPath.mapper[1][11] = '~'
+        global last_loc
+        last_loc = TenjaPath
+        player.Combat(['Slime1','Slime2','Slime3'],{'Slime1':'$','Slime2':'#','Slime3':'%','$':Fight},{'$':'Slime1','#':'Slime2','%':'Slime3'})
+        Type("The path before you shows a ruined temple, corrupted with fiery gems like the one within the Fire Amulet.")
 
+def TenjaFollower(player):
+    a = random.randint(0,1)
+    if a == 0:
+        Type("[Follower]: You are NOT supposed to be here! Leave.")
+    elif a == 1:
+        Type("[Follower]: The slimes out front were a warning. Heed it.")
+
+def TenjaGuard(player):
+    global last_loc
+    last_loc = TenjaPath
+    if 'defT' not in player.cuts:
+        Type(f"[Janus]: I am Janus, Guardian of the Tenja Temple. {player.name} why are you here?")
+        if "Defeat Tenja" in player.curq:
+            Type(f"[{player.name}]: To take your Staff.")
+            Type("[Janus]: Another ruin hunter? Please, your silly group won't be taking anything today.")
+            player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
+        else:
+            Type(f"Answer? (y/n)")
+            key = readchar.readkey()
+            if key == 'y':
+                Type(f"[{player.name}]: To loot this ruin. I came here for treasure.")
+                Type("[Janus]: Our truest treasure has been stolen. I'm here to make sure no more valuable items go missing.")
+                player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
+            Type("[Janus]: Well. Seeing as you are not leaving, we are going to make you leave.")
+            player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
+        player.cuts.append('defT')
+    else:
+        Type("[Janus]: I already told you all that I know... If you're seen in here I could get in trouble...")
+
+TenjaTemple = Area("Tenja Temple",[['#','#','#','#','#','#','#','#','#','#'],
+ ['#','~','=','=','=','=','=','=','&','='],
+ ['|','=','~','~','~','~','~','~','=','+'],
+ ['#','~','=','=','=','=','=','=','&','='],
+ ['#','#','#','#','#','#','#','#','#','#']],'.',1,2,{'|':''})
 TenjaPath = Area("Tenja Path",[['#','#','#','#','#','#','#','#','#','#','#','#','#'],
  ['#','.','.','~','.','.','~','.','.','~','.','%','|'], #%; four slimes
  ['#','?','~','.','~','.','.','~','.','.','~','.','#'], #?; Kai
@@ -1922,8 +2059,9 @@ Tut = Area("Dock",[["#","#","#","#","#"],
         ["#",".",".","&","#"],
         ["#",".",".",".","|"],
         ["#","#","#","#","#"]],'.',1,1,{'|':MainCity,'&':Amb})
+TenjaTemple.emap = {'|':TenjaPath,'&':TenjaFollower,'+':TenjaGuard,'$':TenjaFollower}
 MainCity.emap = {'|':Tut,'&':Guard,'£':Weapons_Shop,'$':Conversion,'!':Shady_Merchant,'%':Potion_Geek,'_':TenjaPath}
-TenjaPath.emap = {'|':MainCity,'_':MainCity,'?':Other_Vistor,'%':Pre_Boss_Fight}
+TenjaPath.emap = {'|':TenjaTemple,'_':MainCity,'?':Other_Vistor,'%':Pre_Boss_Fight}
 
 '''
 player1 = Stats('',10,1,0,100,1,Tut,[],0,'','','',[],'',['Gob'],10)
