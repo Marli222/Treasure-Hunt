@@ -1,1 +1,1 @@
-TenjaPath¬30¬2¬101¬199¬1¬Maru¬["Fist", "Fire Amulet", "Clear Gem", "Half Drunk Potion", "Dagger", "Half Drunk Potion", "Frying Pan", "Slime Goo"]¬27¬2¬¬¬["Invest Tutorial"]¬["Goblin Ear"]¬["Help2", "Gob", "Amb2", "Pot", "Kai", "Con", "Wep"]¬20
+MainCity¬30¬2¬127¬173¬1¬Maru¬["Fist", "Fire Amulet", "Half Drunk Potion", "Dagger", "Half Drunk Potion", "Enhanced Sword"]¬21¬2¬¬¬["Invest Tutorial"]¬["Goblin Ear"]¬["Help2", "Gob", "Amb2", "Pot", "Kai", "Con", "Wep"]¬20

@@ -5,6 +5,10 @@ import time
 import json
 import random
 
+#Finish all Functions
+#Finish Combat Method
+#Finish Randomise Method
+
 dollar_count = 0
 def Check_Full(player,item):
     if player.inv == 30:
@@ -124,6 +128,16 @@ def Save(player1):
         player1.location = 'TenjaPath'
     elif player1.location == TenjaTemple:
         player1.location = 'TenjaTemple'
+    elif player1.location == MylvaPath:
+        player1.location = 'MylvaPath'
+    elif player1.location == MylvaTemple:
+        player1.location = 'MylvaTemple'
+    elif player1.location == XiraPath:
+        player1.location = 'XiraPath'
+    elif player1.location == XiraTemple:
+        player1.location = 'XiraTemple'
+    elif player1.location == GreatTemple:
+        player1.location == 'The Great Temple'
     list1 = json.dumps(player1.inv) 
     list2 = json.dumps(player1.compq)
     list3 = json.dumps(player1.cuts)
@@ -136,7 +150,12 @@ def Save(player1):
     Map2 = json.dumps(MainCity.mapper)
     Map3 = json.dumps(TenjaPath.mapper)
     Map4 = json.dumps(TenjaTemple.mapper)
-    smap.write(f"{Map1}¬{Map2}¬{Map3}¬{Map4}")
+    Map5 = json.dumps(MylvaPath.mapper)
+    Map6 = json.dumps(MylvaTemple.mapper)
+    Map7 = json.dumps(XiraPath.mapper)
+    Map8 = json.dumps(XiraTemple.mapper)
+    Map9 = json.dumps(GreatTemple.mapper)
+    smap.write(f"{Map1}¬{Map2}¬{Map3}¬{Map4}¬{Map5}¬{Map6}¬{Map7}¬{Map8}¬{Map9}")
     smap.close()
     schar = open("Savechar.txt",'w')
     schar.write(f"{Fire.char}¬{Ice.char}¬{Cool.char}¬{Hot.char}")
@@ -154,6 +173,16 @@ def LoadGame():
         loc[0] = TenjaPath
     elif loc[0] == 'TenjaTemple':
         loc[0] = TenjaTemple
+    elif loc[0] == 'MylvaPath':
+        loc[0] = MylvaPath
+    elif loc[0] == 'MylvaTemple':
+        loc[0] = MylvaTemple
+    elif loc[0] == 'XiraPath':
+        loc[0] = XiraPath
+    elif loc[0] == 'XiraTemple':
+        loc[0] = XiraTemple
+    elif loc[0] == 'The Great Temple':
+        loc[0] = GreatTemple
     if loc[7] == '[]':
         loc[7] = []
     else:
@@ -179,6 +208,11 @@ def LoadGame():
     MainCity.mapper = convert(loc2[1])
     TenjaPath.mapper = convert(loc2[2])
     TenjaTemple.mapper = convert(loc2[3])
+    MylvaPath.mapper = convert(loc2[4])
+    MylvaTemple.mapper = convert(loc2[5])
+    XiraPath.mapper = convert(loc2[6])
+    XiraTemple.mapper = convert(loc2[7])
+    GreatTemple.mapper = convert(loc2[8])
     load3 = open("Savechar.txt",'r')
     loc3 = (load3.readline()).split("¬")
     Fire.char = int(loc3[0])
@@ -341,6 +375,257 @@ def Randomise(player):
             elif b == 10:
                 Type("You found a simple potion!")
                 Check_Full(player,"Simple Potion")
+    elif player.location == TenjaTemple:
+        a = random.randint(1,10)
+        if a > 0 and a < 4: #Cheap Item
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found some Gold!")
+                player.gold += 2
+            elif b >= 4 and b < 7:
+                Type("You found Fire Gem Ore!")
+                Check_Full(player,"Fire Gem Ore")
+            elif b >= 7 and b < 10:
+                Type("You found a Clear Gem!")
+                Check_Full(player,"Clear Gem")
+            elif b == 10:
+                Type("You found a half drunk potion!")
+                Check_Full(player,"Half Drunk Potion")
+        elif a >= 4 and a < 9: #Ambush
+            last_loc = TenjaTemple
+            b = random.randint(1,4)
+            if b == 1:
+                Type("A Sprite Ambushed you!")
+                player.Combat(['Sprite1'],{'Sprite1':'$','$':Fight},{'$':'Sprite1'})
+            elif b == 2:
+                Type("A Slime Ambushed you!")
+                player.Combat(['Slime1'],{'Slime1':'$','$':Fight},{'$':'Slime1'})
+            elif b == 3:
+                Type("A couple of summons ambushed you!")
+                c = random.randint(1,2)
+                if c == 2:
+                    player.Combat(['Slime1','Slime2','Sprite3'],{'Slime1':'$','Slime2':'#','Sprite3':'%','$':Fight},{'$':'Slime1','#':'Slime2','%':'Sprite3'})
+                elif c == 1:
+                    player.Combat(['Slime1','Sprite2','Sprite3'],{'Slime1':'$','Sprite2':'#','Sprite3':'%','$':Fight},{'$':'Slime1','#':'Sprite2','%':'Sprite3'})
+            elif b == 4:
+                Type("Two summons have ambushed you!")
+                player.Combat(['Sprite1','Slime2'],{'Sprite1':'$','Slime2':'#','$':Fight},{'$':'Sprite1','#':'Slime2'})
+        elif a >= 9: #Rare
+            Type("You found something rare!")
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found a Fire Gem!")
+                Check_Full(player,"Fire Gem")
+            elif b >= 4 and b < 7:
+                Type("You found Refined Clear Gem!")
+                Check_Full(player,"Refined Clear Gem")
+            elif b >= 7 and b < 10:
+                Type("You found a half full potion!")
+                Check_Full(player,"Half Drunk Potion")
+            elif b == 10:
+                Type("You found a simple potion!")
+                Check_Full(player,"Simple Potion")
+    elif player.location == MylvaPath:
+        a = random.randint(1,10)
+        if a > 0 and a < 6: #Cheap Item
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found a Frying Pan!")
+                Check_Full(player,"Frying Pan")
+            elif b >= 4 and b < 7:
+                Type("You found Worn Boots!")
+                Check_Full(player,"Worn Boots")
+            elif b >= 7 and b < 10:
+                Type("You found a Clear Gem!")
+                Check_Full(player,"Clear Gem")
+            elif b == 10:
+                Type("You found a half drunk potion!")
+                Check_Full(player,"Half Drunk Potion")
+        elif a >= 6 and a < 9: #Ambush
+            last_loc = TenjaPath
+            b = random.randint(1,4)
+            if b == 1:
+                Type("A Goblin Ambushed you!")
+                player.Combat(['Goblin1'],{'Goblin1':'$','$':Fight},{'$':'Goblin1'})
+            elif b == 2:
+                Type("A Slime Ambushed you!")
+                player.Combat(['Slime1'],{'Slime1':'$','$':Fight},{'$':'Slime1'})
+            elif b == 3:
+                Type("A couple of summons ambushed you!")
+                c = random.randint(1,2)
+                if c == 2:
+                    player.Combat(['Slime1','Slime2','Goblin3'],{'Slime1':'$','Slime2':'#','Goblin3':'%','$':Fight},{'$':'Slime1','#':'Slime2','%':'Goblin3'})
+                elif c == 1:
+                    player.Combat(['Slime1','Goblin2','Goblin3'],{'Slime1':'$','Goblin2':'#','Goblin3':'%','$':Fight},{'$':'Slime1','#':'Goblin2','%':'Goblin3'})
+            elif b == 4:
+                Type("Two summons have ambushed you!")
+                player.Combat(['Goblin1','Slime2'],{'Goblin1':'$','Slime2':'#','$':Fight},{'$':'Goblin1','#':'Slime2'})
+        elif a >= 9: #Rare
+            Type("You found something rare!")
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found a Clear Gem!")
+                Check_Full(player,"Clear Gem")
+            elif b >= 4 and b < 7:
+                Type("You found Refined Clear Gem!")
+                Check_Full(player,"Refined Clear Gem")
+            elif b >= 7 and b < 10:
+                Type("You found a Fire Gem Ore!")
+                Check_Full(player,"Fire Gem Ore")
+            elif b == 10:
+                Type("You found a simple potion!")
+                Check_Full(player,"Simple Potion")
+    elif player.location == MylvaTemple:
+        a = random.randint(1,10)
+        if a > 0 and a < 4: #Cheap Item
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found some Gold!")
+                player.gold += 2
+            elif b >= 4 and b < 7:
+                Type("You found Fire Gem Ore!")
+                Check_Full(player,"Fire Gem Ore")
+            elif b >= 7 and b < 10:
+                Type("You found a Clear Gem!")
+                Check_Full(player,"Clear Gem")
+            elif b == 10:
+                Type("You found a half drunk potion!")
+                Check_Full(player,"Half Drunk Potion")
+        elif a >= 4 and a < 9: #Ambush
+            last_loc = TenjaTemple
+            b = random.randint(1,4)
+            if b == 1:
+                Type("A Sprite Ambushed you!")
+                player.Combat(['Sprite1'],{'Sprite1':'$','$':Fight},{'$':'Sprite1'})
+            elif b == 2:
+                Type("A Slime Ambushed you!")
+                player.Combat(['Slime1'],{'Slime1':'$','$':Fight},{'$':'Slime1'})
+            elif b == 3:
+                Type("A couple of summons ambushed you!")
+                c = random.randint(1,2)
+                if c == 2:
+                    player.Combat(['Slime1','Slime2','Sprite3'],{'Slime1':'$','Slime2':'#','Sprite3':'%','$':Fight},{'$':'Slime1','#':'Slime2','%':'Sprite3'})
+                elif c == 1:
+                    player.Combat(['Slime1','Sprite2','Sprite3'],{'Slime1':'$','Sprite2':'#','Sprite3':'%','$':Fight},{'$':'Slime1','#':'Sprite2','%':'Sprite3'})
+            elif b == 4:
+                Type("Two summons have ambushed you!")
+                player.Combat(['Sprite1','Slime2'],{'Sprite1':'$','Slime2':'#','$':Fight},{'$':'Sprite1','#':'Slime2'})
+        elif a >= 9: #Rare
+            Type("You found something rare!")
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found a Fire Gem!")
+                Check_Full(player,"Fire Gem")
+            elif b >= 4 and b < 7:
+                Type("You found Refined Clear Gem!")
+                Check_Full(player,"Refined Clear Gem")
+            elif b >= 7 and b < 10:
+                Type("You found a half full potion!")
+                Check_Full(player,"Half Drunk Potion")
+            elif b == 10:
+                Type("You found a simple potion!")
+                Check_Full(player,"Simple Potion")
+    elif player.location == XiraPath:
+        a = random.randint(1,10)
+        if a > 0 and a < 6: #Cheap Item
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found a Frying Pan!")
+                Check_Full(player,"Frying Pan")
+            elif b >= 4 and b < 7:
+                Type("You found Worn Boots!")
+                Check_Full(player,"Worn Boots")
+            elif b >= 7 and b < 10:
+                Type("You found a Clear Gem!")
+                Check_Full(player,"Clear Gem")
+            elif b == 10:
+                Type("You found a half drunk potion!")
+                Check_Full(player,"Half Drunk Potion")
+        elif a >= 6 and a < 9: #Ambush
+            last_loc = TenjaPath
+            b = random.randint(1,4)
+            if b == 1:
+                Type("A Goblin Ambushed you!")
+                player.Combat(['Goblin1'],{'Goblin1':'$','$':Fight},{'$':'Goblin1'})
+            elif b == 2:
+                Type("A Slime Ambushed you!")
+                player.Combat(['Slime1'],{'Slime1':'$','$':Fight},{'$':'Slime1'})
+            elif b == 3:
+                Type("A couple of summons ambushed you!")
+                c = random.randint(1,2)
+                if c == 2:
+                    player.Combat(['Slime1','Slime2','Goblin3'],{'Slime1':'$','Slime2':'#','Goblin3':'%','$':Fight},{'$':'Slime1','#':'Slime2','%':'Goblin3'})
+                elif c == 1:
+                    player.Combat(['Slime1','Goblin2','Goblin3'],{'Slime1':'$','Goblin2':'#','Goblin3':'%','$':Fight},{'$':'Slime1','#':'Goblin2','%':'Goblin3'})
+            elif b == 4:
+                Type("Two summons have ambushed you!")
+                player.Combat(['Goblin1','Slime2'],{'Goblin1':'$','Slime2':'#','$':Fight},{'$':'Goblin1','#':'Slime2'})
+        elif a >= 9: #Rare
+            Type("You found something rare!")
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found a Clear Gem!")
+                Check_Full(player,"Clear Gem")
+            elif b >= 4 and b < 7:
+                Type("You found Refined Clear Gem!")
+                Check_Full(player,"Refined Clear Gem")
+            elif b >= 7 and b < 10:
+                Type("You found a Fire Gem Ore!")
+                Check_Full(player,"Fire Gem Ore")
+            elif b == 10:
+                Type("You found a simple potion!")
+                Check_Full(player,"Simple Potion")
+    elif player.location == XiraTemple:
+        a = random.randint(1,10)
+        if a > 0 and a < 4: #Cheap Item
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found some Gold!")
+                player.gold += 2
+            elif b >= 4 and b < 7:
+                Type("You found Fire Gem Ore!")
+                Check_Full(player,"Fire Gem Ore")
+            elif b >= 7 and b < 10:
+                Type("You found a Clear Gem!")
+                Check_Full(player,"Clear Gem")
+            elif b == 10:
+                Type("You found a half drunk potion!")
+                Check_Full(player,"Half Drunk Potion")
+        elif a >= 4 and a < 9: #Ambush
+            last_loc = TenjaTemple
+            b = random.randint(1,4)
+            if b == 1:
+                Type("A Sprite Ambushed you!")
+                player.Combat(['Sprite1'],{'Sprite1':'$','$':Fight},{'$':'Sprite1'})
+            elif b == 2:
+                Type("A Slime Ambushed you!")
+                player.Combat(['Slime1'],{'Slime1':'$','$':Fight},{'$':'Slime1'})
+            elif b == 3:
+                Type("A couple of summons ambushed you!")
+                c = random.randint(1,2)
+                if c == 2:
+                    player.Combat(['Slime1','Slime2','Sprite3'],{'Slime1':'$','Slime2':'#','Sprite3':'%','$':Fight},{'$':'Slime1','#':'Slime2','%':'Sprite3'})
+                elif c == 1:
+                    player.Combat(['Slime1','Sprite2','Sprite3'],{'Slime1':'$','Sprite2':'#','Sprite3':'%','$':Fight},{'$':'Slime1','#':'Sprite2','%':'Sprite3'})
+            elif b == 4:
+                Type("Two summons have ambushed you!")
+                player.Combat(['Sprite1','Slime2'],{'Sprite1':'$','Slime2':'#','$':Fight},{'$':'Sprite1','#':'Slime2'})
+        elif a >= 9: #Rare
+            Type("You found something rare!")
+            b = random.randint(1,10)
+            if b > 0 and b < 4:
+                Type("You found a Fire Gem!")
+                Check_Full(player,"Fire Gem")
+            elif b >= 4 and b < 7:
+                Type("You found Refined Clear Gem!")
+                Check_Full(player,"Refined Clear Gem")
+            elif b >= 7 and b < 10:
+                Type("You found a half full potion!")
+                Check_Full(player,"Half Drunk Potion")
+            elif b == 10:
+                Type("You found a simple potion!")
+                Check_Full(player,"Simple Potion")
+
 class Shop:
     def __init__(shop,stock,stockmapper):
         shop.stock = stock
@@ -545,6 +830,15 @@ class Stats:
             elif i == 'The Tenja Guardian':
                 TGuard = TGuardian('The Tenja Guardian')
                 At.append(TGuard)
+            elif i == 'Sprite1':
+                Sprite1 = Sprite('Sprite1')
+                At.append(Sprite1)
+            elif i == 'Sprite2':
+                Sprite2 = Sprite('Sprite2')
+                At.append(Sprite2)
+            elif i == 'Sprite3':
+                Sprite3 = Sprite('Sprite3')
+                At.append(Sprite3)
 
         Combat.Update(self)
         while Enemies != []:
@@ -665,6 +959,9 @@ class Stats:
                         elif self.location.fmap['$'] == 'Slime1':
                             info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
                             Attack(self,Slime1)
+                        elif self.location.fmap['$'] == 'Sprite1':
+                            info(self.location.py_y,self.location.py_x,self,Sprite1,Enemies)
+                            Attack(self,Sprite1)
                         elif self.location.fmap['$'] == 'Tenja Follower 2':
                             info(self.location.py_y,self.location.py_x,self,TFollower2,Enemies)
                             Attack(self,TFollower2)
@@ -675,6 +972,9 @@ class Stats:
                         elif self.location.fmap['#'] == 'Slime2':
                             info(self.location.py_y,self.location.py_x,self,Slime2,Enemies)
                             Attack(self,Slime2)
+                        elif self.location.fmap['#'] == 'Sprite2':
+                            info(self.location.py_y,self.location.py_x,self,Sprite2,Enemies)
+                            Attack(self,Sprite2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
                         if self.location.fmap['%'] == 'Goblin3':
                             info(self.location.py_y,self.location.py_x,self,Gob3,Enemies)
@@ -682,6 +982,9 @@ class Stats:
                         elif self.location.fmap['%'] == 'Slime3':
                             info(self.location.py_y,self.location.py_x,self,Slime3,Enemies)
                             Attack(self,Slime3)
+                        elif self.location.fmap['%'] == 'Sprite3':
+                            info(self.location.py_y,self.location.py_x,self,Sprite3,Enemies)
+                            Attack(self,Sprite3)
                     self.location.py_y += 1
                     continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "+" or self.location.mapper[self.location.py_y][self.location.py_x] == "&":
@@ -695,6 +998,8 @@ class Stats:
                         if self.location.fmap['&'] == 'Tenja Follower 1': 
                             info(self.location.py_y,self.location.py_x,self,TFollower1,Enemies)
                             Attack(self,TFollower1)
+                    self.location.py_y += 1
+                    continue
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -717,6 +1022,9 @@ class Stats:
                         elif self.location.fmap['$'] == 'Slime1':
                             info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
                             Attack(self,Slime1)
+                        elif self.location.fmap['$'] == 'Sprite1':
+                            info(self.location.py_y,self.location.py_x,self,Sprite1,Enemies)
+                            Attack(self,Sprite1)
                         elif self.location.fmap['$'] == 'Tenja Follower 2':
                             info(self.location.py_y,self.location.py_x,self,TFollower2,Enemies)
                             Attack(self,TFollower2)
@@ -727,6 +1035,9 @@ class Stats:
                         elif self.location.fmap['#'] == 'Slime2':
                             info(self.location.py_y,self.location.py_x,self,Slime2,Enemies)
                             Attack(self,Slime2)
+                        elif self.location.fmap['#'] == 'Sprite2':
+                            info(self.location.py_y,self.location.py_x,self,Sprite2,Enemies)
+                            Attack(self,Sprite2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
                         if self.location.fmap['%'] == 'Goblin3':
                             info(self.location.py_y,self.location.py_x,self,Gob3,Enemies)
@@ -734,6 +1045,9 @@ class Stats:
                         elif self.location.fmap['%'] == 'Slime3':
                             info(self.location.py_y,self.location.py_x,self,Slime3,Enemies)
                             Attack(self,Slime3)
+                        elif self.location.fmap['%'] == 'Sprite3':
+                            info(self.location.py_y,self.location.py_x,self,Sprite3,Enemies)
+                            Attack(self,Sprite3)
                     self.location.py_y -= 1
                     continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "+" or self.location.mapper[self.location.py_y][self.location.py_x] == "&":
@@ -747,6 +1061,8 @@ class Stats:
                         if self.location.fmap['&'] == 'Tenja Follower 1': 
                             info(self.location.py_y,self.location.py_x,self,TFollower1,Enemies)
                             Attack(self,TFollower1)
+                    self.location.py_y -= 1
+                    continue
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -769,6 +1085,9 @@ class Stats:
                         elif self.location.fmap['$'] == 'Slime1':
                             info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
                             Attack(self,Slime1)
+                        elif self.location.fmap['$'] == 'Sprite1':
+                            info(self.location.py_y,self.location.py_x,self,Sprite1,Enemies)
+                            Attack(self,Sprite1)
                         elif self.location.fmap['$'] == 'Tenja Follower 2':
                             info(self.location.py_y,self.location.py_x,self,TFollower2,Enemies)
                             Attack(self,TFollower2)
@@ -779,6 +1098,9 @@ class Stats:
                         elif self.location.fmap['#'] == 'Slime2':
                             info(self.location.py_y,self.location.py_x,self,Slime2,Enemies)
                             Attack(self,Slime2)
+                        elif self.location.fmap['#'] == 'Sprite2':
+                            info(self.location.py_y,self.location.py_x,self,Sprite2,Enemies)
+                            Attack(self,Sprite2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
                         if self.location.fmap['%'] == 'Goblin3':
                             info(self.location.py_y,self.location.py_x,self,Gob3,Enemies)
@@ -786,6 +1108,9 @@ class Stats:
                         elif self.location.fmap['%'] == 'Slime3':
                             info(self.location.py_y,self.location.py_x,self,Slime3,Enemies)
                             Attack(self,Slime3)
+                        elif self.location.fmap['%'] == 'Sprite3':
+                            info(self.location.py_y,self.location.py_x,self,Sprite3,Enemies)
+                            Attack(self,Sprite3)
                     self.location.py_x += 1
                     continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "+" or self.location.mapper[self.location.py_y][self.location.py_x] == "&":
@@ -799,6 +1124,8 @@ class Stats:
                         if self.location.fmap['&'] == 'Tenja Follower 1': 
                             info(self.location.py_y,self.location.py_x,self,TFollower1,Enemies)
                             Attack(self,TFollower1)
+                    self.location.py_x += 1
+                    continue
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -821,6 +1148,9 @@ class Stats:
                         elif self.location.fmap['$'] == 'Slime1':
                             info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
                             Attack(self,Slime1)
+                        elif self.location.fmap['$'] == 'Sprite1':
+                            info(self.location.py_y,self.location.py_x,self,Sprite1,Enemies)
+                            Attack(self,Sprite1)
                         elif self.location.fmap['$'] == 'Tenja Follower 2':
                             info(self.location.py_y,self.location.py_x,self,TFollower2,Enemies)
                             Attack(self,TFollower2)
@@ -831,6 +1161,9 @@ class Stats:
                         elif self.location.fmap['#'] == 'Slime2':
                             info(self.location.py_y,self.location.py_x,self,Slime2,Enemies)
                             Attack(self,Slime2)
+                        elif self.location.fmap['#'] == 'Sprite2':
+                            info(self.location.py_y,self.location.py_x,self,Sprite2,Enemies)
+                            Attack(self,Sprite2)
                     elif self.location.mapper[self.location.py_y][self.location.py_x] == "%":
                         if self.location.fmap['%'] == 'Goblin3':
                             info(self.location.py_y,self.location.py_x,self,Gob3,Enemies)
@@ -838,6 +1171,9 @@ class Stats:
                         elif self.location.fmap['%'] == 'Slime3':
                             info(self.location.py_y,self.location.py_x,self,Slime3,Enemies)
                             Attack(self,Slime3)
+                        elif self.location.fmap['%'] == 'Sprite3':
+                            info(self.location.py_y,self.location.py_x,self,Sprite3,Enemies)
+                            Attack(self,Sprite3)
                     self.location.py_x -= 1
                     continue
                 elif self.location.mapper[self.location.py_y][self.location.py_x] == "+" or self.location.mapper[self.location.py_y][self.location.py_x] == "&":
@@ -851,6 +1187,8 @@ class Stats:
                         if self.location.fmap['&'] == 'Tenja Follower 1': 
                             info(self.location.py_y,self.location.py_x,self,TFollower1,Enemies)
                             Attack(self,TFollower1)
+                    self.location.py_x -= 1
+                    continue
                 else:
                     self.location.Last1 = self.location.mapper[self.location.py_y][self.location.py_x]
                     self.location.l_y = self.location.py_y
@@ -2026,6 +2364,8 @@ def TenjaGuard(player):
             Type(f"[{player.name}]: To take your Staff.")
             Type("[Janus]: Another ruin hunter? Please, your silly group won't be taking anything today.")
             player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
+            Type(f"[Janus]: I can't give you my staff... It's invaluable.")
+            Type(f"[Janus]: Here, I see you have a fire amulet. I'll give you a fire gem to recharge it.")
         else:
             Type(f"Answer? (y/n)")
             key = readchar.readkey()
@@ -2039,6 +2379,166 @@ def TenjaGuard(player):
     else:
         Type("[Janus]: I already told you all that I know... If you're seen in here I could get in trouble...")
 
+def Kai(player):
+    if 'Invest Tutorial' not in player.compq:
+        Type("[Kai]: I see you never bothered to listen to me.")
+        Type("[Kai]: Go. I don't want to talk to you.")
+        return
+    if 'Sprite Essence' not in player.curq and 'Goblin Ear' in player.compq:
+            Type("[Kai]: Hey, its you again! Do you mind if you help me out again?")
+            Type("[Kai]: Could you get me some Sprite Essence (y/n)")
+            key = readchar.readkey()
+            if key == 'y':
+                Type("[Kai]: Great! I'm not good at defeating summons as you know...")
+                Type("[Kai]: I've got some juicy info for you if get me the Sprite Essence.")
+                Type("Find out more? (y/n)")
+                key = readchar.readkey()
+                if key == 'y':
+                    Type(f"[{player.name}]: Juicy Info? What do you mean?")
+                    Type("[Kai]: I can't tell you just yet, that will spoil the surprise!")
+                player.curq.append("Sprite Essence")
+            else:
+                Type("[Kai]: That's ok. If you change your mind I'll be here waiting!")
+    if "Sprite Essence" not in player.inv and "Sprite Essence" in player.curq:
+        Type("[Kai]: Do you have it? No? Oh, there are Sprites around here so you can find it!")
+    if "Sprite Essence" in player.inv:
+        Type("[Kai]: You got it for me! Thanks.")
+        Type("[Kai]: I have a spare potion for you!")
+        Type("[Kai]: Plus I heard that a rumour around here that someone stole a purple gem. According to them, that's what caused the island to fall.")
+        Type("[Kai]: This Gem is supposed to be in the heart of the island - The Great Temple. That's why they won't let anyone in.")
+        TenjaPath.mapper[3][4] = '~'
+        Type("QUEST COMPLETED!")
+        Type(">>>Fetch Sprite Essence<<<")
+        Type("Reward: 150 exp, Spicy Potion")
+        player.curq.remove("Sprite Essence")
+        player.inv.remove("Sprite Essence")
+        player.compq.append("Sprite Essence")
+        player.exp += 150
+        Check_Full(player,"Spicy Potion")
+        Exp(player)
+        MaxHp(player)
+
+def Arden(player):
+    pass
+
+def Puzzle(player):
+    pass
+
+def MylvaFollower(player):
+    a = random.randint(0,1)
+    if a == 0:
+        Type("[Follower]: You solved the puzzle? Well done!")
+    elif a == 1:
+        Type("[Follower]: It took me so long to make that puzzle.... I'm happy someone finally solved it!")
+
+def MylvaGuard(player):
+    global last_loc
+    last_loc = TenjaPath
+    if 'defT' not in player.cuts:
+        Type(f"[Janus]: I am Janus, Guardian of the Tenja Temple. {player.name} why are you here?")
+        if "Defeat Tenja" in player.curq:
+            Type(f"[{player.name}]: To take your Staff.")
+            Type("[Janus]: Another ruin hunter? Please, your silly group won't be taking anything today.")
+            player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
+            Type(f"[Janus]: I can't give you my staff... It's invaluable.")
+            Type(f"[Janus]: Here, I see you have a fire amulet. I'll give you a fire gem to recharge it.")
+        else:
+            Type(f"Answer? (y/n)")
+            key = readchar.readkey()
+            if key == 'y':
+                Type(f"[{player.name}]: To loot this ruin. I came here for treasure.")
+                Type("[Janus]: Our truest treasure has been stolen. I'm here to make sure no more valuable items go missing.")
+                player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
+            Type("[Janus]: Well. Seeing as you are not leaving, we are going to make you leave.")
+            player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
+        player.cuts.append('defT')
+    else:
+        Type("[Janus]: I already told you all that I know... If you're seen in here I could get in trouble...")
+
+def Kai2(player):
+    pass
+
+def Pre_Boss_Fight2(player):
+    Type("[Slime1]: Vistors can not pass here.")
+    Type(f"[{player.name}]: You can talk?")
+    Type("[Slime2]: Vistors can not pass here.")
+    Type("Leave? (y/n)")
+    key = readchar.readkey()
+    if key == 'n':
+        Type("[Slime3]: Vistors can not pass here.")
+        TenjaPath.mapper[1][11] = '~'
+        global last_loc
+        last_loc = TenjaPath
+        player.Combat(['Slime1','Slime2','Slime3'],{'Slime1':'$','Slime2':'#','Slime3':'%','$':Fight},{'$':'Slime1','#':'Slime2','%':'Slime3'})
+        Type("The path before you shows a ruined temple, corrupted with fiery gems like the one within the Fire Amulet.")
+
+def XiraFollower(player):
+    a = random.randint(0,1)
+    if a == 0:
+        Type("[Follower]: ...")
+    elif a == 1:
+        Type("[Follower]: I'm shocked you even made it here.")
+
+def XiraGuard(player):
+    global last_loc
+    last_loc = TenjaPath
+    if 'defT' not in player.cuts:
+        Type(f"[Janus]: I am Janus, Guardian of the Tenja Temple. {player.name} why are you here?")
+        if "Defeat Tenja" in player.curq:
+            Type(f"[{player.name}]: To take your Staff.")
+            Type("[Janus]: Another ruin hunter? Please, your silly group won't be taking anything today.")
+            player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
+            Type(f"[Janus]: I can't give you my staff... It's invaluable.")
+            Type(f"[Janus]: Here, I see you have a fire amulet. I'll give you a fire gem to recharge it.")
+        else:
+            Type(f"Answer? (y/n)")
+            key = readchar.readkey()
+            if key == 'y':
+                Type(f"[{player.name}]: To loot this ruin. I came here for treasure.")
+                Type("[Janus]: Our truest treasure has been stolen. I'm here to make sure no more valuable items go missing.")
+                player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
+            Type("[Janus]: Well. Seeing as you are not leaving, we are going to make you leave.")
+            player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
+        player.cuts.append('defT')
+    else:
+        Type("[Janus]: I already told you all that I know... If you're seen in here I could get in trouble...")
+
+def Altar(player):
+    pass
+
+def GreatGuard(player):
+    pass
+
+GreatTemple = Area("The Great Temple", [['#','#','#','#','#','#','#','#','#','#','#','#','#'],
+ ['#','=','=','=','=','=','=','=','=','=','=','+','#'],
+ ['#','=','=','=','=','=','=','=','=','=','=','=','#'],
+ ['#','=','=','=','=','=','=','=','=','=','=','=','#'],
+ ['}',':',':',':',':',':',':',':',':',':',':','&','#'],
+ ['#','=','=','=','=','=','=','=','=','=','=','=','#'],
+ ['#','=','=','=','=','=','=','=','=','=','=','=','#'],
+ ['#','=','=','=','=','=','=','=','=','=','=','=','#'],
+ ['#','#','#','#','#','#','#','#','#','#','#','#','#']
+ ],'.',1,4,{'|':''})
+XiraTemple = Area("Xira Temple", [['#','#','#','#','#','#','#','#','#','#'],
+ ['#','~','~','~','~','~','~','~','&','~'],
+ ['|','~','~','~','~','~','~','~','~','+'],
+ ['#','~','~','~','~','~','~','~','&','~'],
+ ['#','#','#','#','#','#','#','#','#','#']],'.',1,2,{'|':''})
+XiraPath = Area("Xira Path", [['#','#','#','#','#','#','#','#','#','#','#','#','#'],
+ ['#','~','~','.','~','~','~','.','~','~','~','£','|'],
+ ['#','~','.','~','.','~','.','~','.','~','.','~','#'],
+ ['#','~','~','.','~','~','~','.','~','~','~','.','#'],
+ ['#','-','#','#','#','#','#','#','#','#','#','#','#']],'.',1,3,{'|':''})
+MylvaTemple = Area("Mylva Temple", [['#','#','#','#','#','#','#','#','#','#'],
+ ['#','~','!','!','!','!','!','!','$','!'],
+ ['|','~','~','~','~','~','~','~','!','-'],
+ ['#','~','!','!','!','!','!','!','$','!'],
+ ['#','#','#','#','#','#','#','#','#','#']],'.',1,2,{'|':''})
+MylvaPath = Area("Mylva Path", [['#','#','#','#','#','#','#','#','#','#','#','#','#'],
+ ['#','.','~','.','.','.','~','.','.','.','~','}','|'],
+ ['#','~','.','~','.','~','.','~','.','~','.','~','#'],
+ ['#','.','~','.','?','.','~','.','.','.','~','.','#'],
+ ['#','^','#','#','#','#','#','#','#','#','#','#','#']],'.',1,3,{'|':''})
 TenjaTemple = Area("Tenja Temple",[['#','#','#','#','#','#','#','#','#','#'],
  ['#','~','=','=','=','=','=','=','&','='],
  ['|','=','~','~','~','~','~','~','=','+'],
@@ -2059,9 +2559,16 @@ Tut = Area("Dock",[["#","#","#","#","#"],
         ["#",".",".","&","#"],
         ["#",".",".",".","|"],
         ["#","#","#","#","#"]],'.',1,1,{'|':MainCity,'&':Amb})
-TenjaTemple.emap = {'|':TenjaPath,'&':TenjaFollower,'+':TenjaGuard,'$':TenjaFollower}
-MainCity.emap = {'|':Tut,'&':Guard,'£':Weapons_Shop,'$':Conversion,'!':Shady_Merchant,'%':Potion_Geek,'_':TenjaPath}
+
+
+MainCity.emap = {'|':Tut,'&':Guard,'£':Weapons_Shop,'$':Conversion,'!':Shady_Merchant,'%':Potion_Geek,'_':TenjaPath,'^':MylvaPath,'-':XiraPath,'}':GreatTemple}
 TenjaPath.emap = {'|':TenjaTemple,'_':MainCity,'?':Other_Vistor,'%':Pre_Boss_Fight}
+TenjaTemple.emap = {'|':TenjaPath,'&':TenjaFollower,'+':TenjaGuard,'$':TenjaFollower}
+MylvaPath.emap = {'|':MylvaTemple,'^':MainCity,'?':Kai,'}':Puzzle}
+MylvaTemple.emap = {'|':MylvaPath,'-':MylvaGuard,'$':MylvaFollower}
+XiraPath.emap = {'|':XiraTemple,'-':MainCity,'?':Kai2,'£':Pre_Boss_Fight2}
+XiraTemple.emap = {'|':XiraPath,'&':XiraFollower,'+',XiraGuard}
+GreatTemple.emap = {'}':MainCity,'&':GreatGuard,'+':Altar}
 
 '''
 player1 = Stats('',10,1,0,100,1,Tut,[],0,'','','',[],'',['Gob'],10)
