@@ -1,1 +1,1 @@
-MainCity¬30¬2¬127¬173¬1¬Maru¬["Fist", "Fire Amulet", "Half Drunk Potion", "Dagger", "Half Drunk Potion", "Enhanced Sword"]¬21¬2¬¬¬["Invest Tutorial"]¬["Goblin Ear"]¬["Help2", "Gob", "Amb2", "Pot", "Kai", "Con", "Wep"]¬20
+Tut¬6¬1¬10¬40¬1¬Armeen¬["Fist", "Fire Amulet", "Goblin Ear"]¬2¬3¬¬¬[]¬["Ruin Hunter"]¬["Help2", "Gob", "Amb2"]¬10¬0
