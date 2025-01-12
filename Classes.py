@@ -55,7 +55,7 @@ def MaxHp(player):
         if player.lvl == 1:
             player.hp = 10
         elif player.lvl == 2:
-            player.hp = 30
+            player.hp = 20
         elif player.lvl == 3:
             player.hp = 50
         elif player.lvl == 4:
@@ -2581,7 +2581,7 @@ def Other_Vistor(player):
                 Type("[Kai]: That's ok. If you change your mind I'll be here waiting!")
         if "Goblin Ear" not in player.inv and "Goblin Ear" in player.curq:
             Type("[Kai]: Do you have it? No? Oh, there are Goblins around here so you can find it!")
-        if "Goblin Ear" in player.inv:
+        if "Goblin Ear" in player.inv and "Goblin Ear" in player.curq:
             Type("[Kai]: You got it for me! Thanks.")
             Type("[Kai]: As promised I have this for you...")
             Type("[Kai]: I'll see you around then!")
@@ -2627,8 +2627,8 @@ def TenjaGuard(player):
             Type(f"[{player.name}]: To take your Staff.")
             Type("[Janus]: Another ruin hunter? Please, your silly group won't be taking anything today.")
             player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
-            TenjaTemple.mapper[1][9] = '~'
-            TenjaTemple.mapper[3][9] = '~'
+            TenjaTemple.mapper[1][8] = '~'
+            TenjaTemple.mapper[3][8] = '~'
             Type(f"[Janus]: I can't give you my staff... It's invaluable.")
             Type(f"[Janus]: Here, I see you have a fire amulet. I'll give you a fire gem to recharge it.")
             Type(f"Take the Gem in exchange for his life? (y/n)")
@@ -2711,7 +2711,7 @@ def Kai(player):
                 Type("[Kai]: That's ok. If you change your mind I'll be here waiting!")
     if "Sprite Essence" not in player.inv and "Sprite Essence" in player.curq:
         Type("[Kai]: Do you have it? No? Oh, there are Sprites around here so you can find it!")
-    if "Sprite Essence" in player.inv:
+    if "Sprite Essence" in player.inv and "Sprite Essence" in player.curq:
         Type("[Kai]: You got it for me! Thanks.")
         Type("[Kai]: I have a spare potion for you!")
         Type("[Kai]: Plus I heard that a rumour around here that someone stole a purple gem. According to them, that's what caused the island to fall.")
@@ -2744,12 +2744,12 @@ def Arden(player):
     key = readchar.readkey()
     if key == 'y':
         Type(f"[{player.name}]: Yes, that's me. What's it to you?")
-        Type("[Kai]: I'm Arden. Taylor must've sent you? (y/n)")
+        Type("[Arden]: I'm Arden. Taylor must've sent you? (y/n)")
         key = readchar.readkey()
         if key == 'y':
             Type(f"[{player.name}]: Yes, I'm here for the Mylva Guardian.")
             Type("[Arden]: Good. He sent me here to deliver this Ice Amulet for you. It's got 3 charges already.")
-            Type("[Arden]: It wasn't cheap so much sure you do your job well.")
+            Type("[Arden]: It wasn't cheap so make sure you do your job well.")
             Type(f"[{player.name}]: Yes, don't worry.")
             Type("You obtained a Ice Amulet!")
             Check_Full(player,"Ice Amulet")
@@ -2777,20 +2777,21 @@ def Arden(player):
         key = readchar.readkey()
         if key == 'a':
             player.Combat(['Arden','Sprite3'],{'Arden':'$','Sprite3':'%','$':Fight},{'$':'Arden','%':'Sprite3'})
+            Puzzle(player)
         else:
             return
-    Puzzle(player)
-    
+     
 def Puzzle(player):
     questions = ["How many people in the MainCity Square - when you first walk in?","How much are Goblin Ears worth according to Marina?","What position is the the first letter of '$' looking person in the alphabet?",'How many types of summons are conjured in the Tenja path and temple?']
     answers = {"How many people in the MainCity Square - when you first walk in?":'6',"How much are Goblin Ears worth according to Marina?":'5',"What position is the the first letter of '$' looking person in the alphabet?":'4','How many types of summons are conjured in the Tenja path and temple?':'3'}
     Type("To complete this puzzle you must answer one question correctly. Say the correct number.")
     a = random.randint(0,3)
     Type(questions[a])
-    Type("Enter the code.")
+    Type("Enter your answer.")
     code = input(f"> ")
     if code == answers[questions[a]]:
         Type("You have solved the puzzle!")
+        MylvaPath.mapper[1][11] = '~'
         if 'Solved' in player.curq:
             player.curq.remove("Solved")
             player.compq.append("Solved")
@@ -2874,7 +2875,7 @@ def Kai2(player):
                 Type("[Kai]: That's ok. I understand if it too much work for you...")
     if "Glowing Skull" not in player.inv and "Glowing Skull" in player.curq:
         Type("[Kai]: It is really rare. I'm not surprised if you don't have yet.")
-    if "Glowing Skull" in player.inv:
+    if "Glowing Skull" in player.inv and "Glowing Skull" in player.curq:
         Type("[Kai]: NO WAY.")
         Type("[Kai]: You actually achieved the impossible.")
         Type("[Kai]: As promised I have 100 Gold for you. It was worth every penny so to speak...")
@@ -3048,9 +3049,9 @@ XiraPath = Area("Xira Path", [['#','#','#','#','#','#','#','#','#','#','#','#','
  ['#','~','~','.','~','~','~','.','~','~','~','?','#'],
  ['#','-','#','#','#','#','#','#','#','#','#','#','#']],'.',1,3,{'|':''})
 MylvaTemple = Area("Mylva Temple", [['#','#','#','#','#','#','#','#','#','#'],
- ['#','~','!','!','!','!','!','!','$','!'],
- ['|','~','~','~','~','~','~','~','!','-'],
- ['#','~','!','!','!','!','!','!','$','!'],
+ ['#','~',',',',',',',',',',',',','$',','],
+ ['|','~','~','~','~','~','~','~',',','-'],
+ ['#','~',',',',',',',',',',',',','$',','],
  ['#','#','#','#','#','#','#','#','#','#']],'.',1,2,{'|':''})
 MylvaPath = Area("Mylva Path", [['#','#','#','#','#','#','#','#','#','#','#','#','#'],
  ['#','.','~','.','.','.','~','.','.','.','~','}','|'],
@@ -3088,9 +3089,41 @@ XiraPath.emap = {'|':XiraTemple,'-':MainCity,'?':Kai2,'£':Pre_Boss_Fight2}
 XiraTemple.emap = {'|':XiraPath,'&':XiraFollower,'+':XiraGuard}
 GreatTemple.emap = {'}':MainCity,'&':GreatGuard,'+':Altar}
 
-'''
-player1 = Stats('',10,1,0,100,1,Tut,[],0,'','','',[],'',['Gob'],10)
-Tut.Update()
+def NewGame():
+    player1 = Stats(Tut,10,1,0,100,1,0,["Fist"],0,'','','',[],[],[],10,0)
+    Tutorial(player1,Tut)
 
-player1.Actions()
-'''
+def Tutorial(player,Tut):
+    Type("[???]: Welcome! Hopefully you're not too dizzy?")
+    Type("[???]: I know the teleportation can feel a bit weird, especially when you first experience it.")
+    Type("[???]: What's your name again??")
+    player.name = input("[Tutorial]: Enter your name... > ")
+    Tut.Update()
+    Type(f"[???]: You're awake {player.name}! Good, I thought I was talking to myself...")
+    Type("[???]: OK, now try and move about! I won't judge you if you bump into the force field!")
+    print("[Tutorial]: Press wasd to move.")
+    while True:
+        key = readchar.readkey()
+        if key in 'wasd':
+            Type(f"[???]: Oh. Sorry I forgot to break the paralysis spell... Haha - My bad, {player.name}.")
+            break
+    player.Actions()
+
+def Main():
+    Type("NEW GAME - 1")
+    Type("LOAD GAME - 2")
+    Type("EXIT GAME - 3")
+    while True:
+        ene = input("Enter number based on your command. > ")
+        if ene == '1':
+            NewGame()
+            break
+        elif ene == '2':
+            LoadGame()
+            break
+        elif ene == '3':
+            quit()
+        else:
+            Type("That was not a valid number, try again.")
+            
+Main()
