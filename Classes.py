@@ -5,11 +5,6 @@ import time
 import json
 import random
 
-#Finish all Functions
-#Finish Combat Method
-#Finish Randomise Method
-
-
 def Check_Full(player,item):
     if player.inv == 30:
         Type(f"[Tutorial]: Your inventory is full. Would you like to replace {item.name} with another item? (y/n)")
@@ -765,7 +760,7 @@ class GuardE:
         mob.gold = 40
         mob.ran = [1,10]
 
-class Arden:
+class ArdenE:
     def __init__(mob,name):
         mob.name = name
         mob.hp = 40
@@ -773,6 +768,7 @@ class Arden:
         mob.exp = 30
         mob.gold = 4
         mob.ran = [1,7]
+        mob.drops = 'Ice Amulet'
 
 class Stats:
     def __init__(self, location, hp, lvl, exp, Rexp, atk, name, inv, gold, wp, beat, target, compq, curq, cuts, maxhp,bank): #compq is completed quests and curq is current quest.
@@ -890,6 +886,9 @@ class Stats:
             elif i == 'Lich3':
                 Lich3 = Lich('Lich3')
                 At.append(Lich3)
+            elif i == 'Arden':
+                Arden1 = ArdenE('Arden')
+                At.append(Arden1)
 
         Combat.Update(self)
         while Enemies != []:
@@ -1007,6 +1006,9 @@ class Stats:
                         elif self.location.fmap['$'] == 'Guard':
                             info(self.location.py_y,self.location.py_x,self,Guard1,Enemies)
                             Attack(self,Guard1)
+                        elif self.location.fmap['$'] == 'Arden':
+                            info(self.location.py_y,self.location.py_x,self,Arden1,Enemies)
+                            Attack(self,Arden1)
                         elif self.location.fmap['$'] == 'Slime1':
                             info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
                             Attack(self,Slime1)
@@ -1105,6 +1107,9 @@ class Stats:
                         elif self.location.fmap['$'] == 'Guard':
                             info(self.location.py_y,self.location.py_x,self,Guard1,Enemies)
                             Attack(self,Guard1)
+                        elif self.location.fmap['$'] == 'Arden':
+                            info(self.location.py_y,self.location.py_x,self,Arden1,Enemies)
+                            Attack(self,Arden1)
                         elif self.location.fmap['$'] == 'Slime1':
                             info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
                             Attack(self,Slime1)
@@ -1203,6 +1208,9 @@ class Stats:
                         elif self.location.fmap['$'] == 'Guard':
                             info(self.location.py_y,self.location.py_x,self,Guard1,Enemies)
                             Attack(self,Guard1)
+                        elif self.location.fmap['$'] == 'Arden':
+                            info(self.location.py_y,self.location.py_x,self,Arden1,Enemies)
+                            Attack(self,Arden1)
                         elif self.location.fmap['$'] == 'Slime1':
                             info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
                             Attack(self,Slime1)
@@ -1301,6 +1309,9 @@ class Stats:
                         elif self.location.fmap['$'] == 'Guard':
                             info(self.location.py_y,self.location.py_x,self,Guard1,Enemies)
                             Attack(self,Guard1)
+                        elif self.location.fmap['$'] == 'Arden':
+                            info(self.location.py_y,self.location.py_x,self,Arden1,Enemies)
+                            Attack(self,Arden1)
                         elif self.location.fmap['$'] == 'Slime1':
                             info(self.location.py_y,self.location.py_x,self,Slime1,Enemies)
                             Attack(self,Slime1)
@@ -1947,6 +1958,14 @@ def Guard(player):
 Harley = Shop(['Sword','Dagger','Axe'],{'Sword':40,'Dagger':15,'Axe':70})
 
 def Weapons_Shop(player): # Harley
+    if 'Coward Ending' in player.cuts:
+        Type(f"[Harley]: So you know about the Gem and you want to find it?")
+        if 'Wep2' in player.cuts:
+            Type(f"[Harley]: I already told you. It has something to do with Dhara. He must be working with the Ruin Hunters.")
+            Type(f"[Harley]: Confront him and you'll find what you are looking for.")
+        else:
+            Type(f"[Harley]: I think Dhara has something to do with it. Talk to him.")
+            Type(f"[Harley]: Trust me if I had the Amulet, I would've crafted something with it by now.")
     if 'Wep' not in player.cuts:
         Type(f"[???]: Oh! Welcome vistor, its nice to see a new face around here.")
         Type(f"[Harley]: My name is Harley, and you are?")
@@ -1986,6 +2005,9 @@ def Weapons_Shop(player): # Harley
         Type(f"[Harley]: Hello, {player.name}. The Guardian of the Mylva temple has set an interesting puzzle at the entrance of the temple!")
         Type(f"[Harley]: Apparently, the puzzle is based on the Tenja Temple and it is SO HARD to solve. Could you solve it?")
         Type("[Harley]: Mind, you have to go to the temple to confirm you are correct.")
+        if 'Solved First' in player.cuts:
+            Type(f"[{player.name}]: I already solved the puzzle.")
+            return
         Type("Accept? (y/n)")
         key = readchar.readkey()
         if key == 'y':
@@ -1997,10 +2019,15 @@ def Weapons_Shop(player): # Harley
             Type(f"[Harley]: That's ok, it is a very difficult puzzle after all.")
         player.cuts.append('Solve')
     if 'Solved' in player.compq and 'Solved' not in player.cuts:
-        Type(f"[{player.name}]: So the solution was actually this...")
-        Type(f"[Harley]: Interesting well thank you.")
-        player.cuts.apppend('Solved')
+        Type(f"[{player.name}]: So the solution was actually different everytime.")
+        Type(f"[Harley]: Oh that's why I struggling so much... Well done on solving it!")
+        player.cuts.append('Solved')
         Type("QUEST COMPLETED!")
+        Type("Reward: 50 exp! 10 Gold!")
+        player.gold += 10
+        player.exp += 50
+        Exp(player)
+        MaxHp(player)
     Type("[Harley]: So do you want to look at my assortment of weapons? Or do you need some magic? (w/r/c)")
     key = readchar.readkey()
     if key == 'w':
@@ -2252,6 +2279,24 @@ def Weapons_Shop(player): # Harley
             
 Dhara = Shop(['Fire Amulet','Ice Amulet','Cool Amulet','Hot Amulet','Clear Gem','Refined Clear Gem','Fire Gem','Ice Gem','Cool Gem','Gold'],{'Fire Amulet':30,'Ice Amulet':50,'Cool Amulet':70,'Hot Amulet':100,'Clear Gem':1,'Refined Clear Gem':5,'Fire Gem':10,'Ice Gem':15,'Cool Gem':20,'Gold':1})
 def Conversion(player): #Dhara
+    if 'Coward Ending' in player.cuts:
+        Type(f"[{player.name}]: You have the Gem don't you?")
+        Type("[Dhara]: Wow! So agressive... What Gem are you talking about? Xira's Gem? Why would I have that?")
+        Type("[Dhara]: Have you been listening to Harley's ramblings?")
+        if player.bank > 0:
+            Type(f"[Dhara]: I've transferred you ${player.bank}, do you not trust me?")
+        Type("Threaten or Trust? (a/b)")
+        key = readchar.readkey()
+        if key == 'b':
+            Type(f"[{player.name}]: You're right. You have no reason to take the Gem. Sorry to bother you.")
+        else:
+            Type(f"[{player.name}]: I have just defeated the Guardian of Xira, Zindel. Don't think for a second, I can't do the same to you.")
+            Type(f"[{player.name}]: And then I can search for the Gem all I want.")
+            Type("[Dhara]: Fine. Here - I value my life. And I've already made even money to live an corner of Earth.")
+            Type("[Dhara]: Send Rex my regards.")
+            Check_Full(player,"Gem of Xira")
+            MainCity.mapper[3][2] = '~'
+            return
     if 'Con' not in player.cuts:
         Type(f"[???]: Great! A new customer - Welcome {player.name} to Javara!")
         Type(f"[{player.name}]: How do you know my name?")
@@ -2389,7 +2434,7 @@ def Shady_Merchant(player):# Taylor the Ruin Hunter
                 player.cuts.append('Defeat Mylva')
         if 'Defeat Xira' not in player.cuts and "Defeat Mylva" in player.compq:
             if 'The Xira Crown' not in player.inv:
-                Type("[Taylor]: Not even you can aquire the crown?")
+                Type("[Taylor]: Can you not even aquire the crown?")
                 Type("[Taylor]: Try again... If we aquire all three relics, we could bring magic to your land!")
             else:
                 Type("[Taylor]: I think it's time you met the Boss. He has requested that you show him the relics.")
@@ -2591,6 +2636,7 @@ def TenjaGuard(player):
             if key == 'n':
                 Type(f"[{player.name}]: I don't need that, pass me the staff.")
                 Type(f"[Janus]: I would NEV-")
+                TenjaTemple.mapper[2][9] = '~'
                 Type(f"You have obtained >>>The Staff of Tenja<<<")
                 Check_Full(player,"The Tenja Staff")
             else:
@@ -2613,8 +2659,8 @@ def TenjaGuard(player):
                 Type(f"[{player.name}]: To loot this ruin. I came here for treasure.")
                 Type("[Janus]: Our truest treasure has been stolen. I'm here to make sure no more valuable items go missing.")
                 player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
-                TenjaTemple.mapper[1][9] = '~'
-                TenjaTemple.mapper[3][9] = '~'
+                TenjaTemple.mapper[1][8] = '~'
+                TenjaTemple.mapper[3][8] = '~'
                 Type(f"[Janus]: Wait! You've defeated me... I can give you the most valuable treasure in here.")
                 Type(f"[Janus]: Here, I see you have a fire amulet. I'll give you a fire gem to recharge it.")
                 Type(f"Take the Gem in exchange for his life? (y/n)")
@@ -2622,6 +2668,9 @@ def TenjaGuard(player):
                 if key == 'n':
                     Type(f"[{player.name}]: Thanks for the Gem.")
                     Type(f"[Janus]: You're wel-")
+                    TenjaTemple.mapper[2][9] = '~'
+                    Type(f"You have obtained >>>The Staff of Tenja<<<")
+                    Check_Full(player,"The Tenja Staff")
                     Type(f"You have obtained a Fire Gem")
                     Check_Full(player,"Fire Gem")
                 else:
@@ -2633,9 +2682,9 @@ def TenjaGuard(player):
                     Type(f"[Janus]: Please don't come back here. I could get in A LOT of trouble...")
             Type("[Janus]: Well. Seeing as you are not leaving, we are going to make you leave.")
             player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
-            TenjaTemple.mapper[1][9] = '~'
-            TenjaTemple.mapper[3][9] = '~'
-            TenjaTemple.mapper[2][10] = '~'
+            TenjaTemple.mapper[1][8] = '~'
+            TenjaTemple.mapper[3][8] = '~'
+            TenjaTemple.mapper[2][9] = '~'
         player.cuts.append('defT')
     else:
         Type("[Janus]: I already told you all that I know... If you're seen in here I could get in trouble...")
@@ -2680,6 +2729,8 @@ def Kai(player):
         MaxHp(player)
 
 def Arden(player):
+    MylvaPath.py_x = 10
+    MylvaPath.py_y = 1
     os.system('cls')
     commap = [['#','#','#','#','#','#','#','#','#','#','#','#','#'],
     ['#','.','~','.','.','.','~','.','.','.','%','}','|'],
@@ -2703,12 +2754,14 @@ def Arden(player):
             Type("You obtained a Ice Amulet!")
             Check_Full(player,"Ice Amulet")
             Ice.char += 3
+            Puzzle(player)
         else:
             Type(f"[{player.name}]: No, he didn't. I'm fine and I know what I'm doing.")
             Type("[Arden]: Ok... Take this just in case...")
             Type("You obtained a Ice Amulet!")
             Check_Full(player,"Ice Amulet")
             Ice.char += 3
+            Puzzle(player)
     else:
         Type(f"[{player.name}]: No? What's that?")
         Type("[Arden]: You don't have to lie. Don't worry, I'm a Ruin Hunter too.")
@@ -2717,21 +2770,34 @@ def Arden(player):
         Type("You obtained a Ice Amulet!")
         Check_Full(player,"Ice Amulet")
         Ice.char += 3
+        Puzzle(player)
     if 'Ruin Hunter' not in player.compq:
         Type("[Arden]: You are not allowed past here.")
         Type("Attack or Leave? (a/l)")
         key = readchar.readkey()
         if key == 'a':
-            player.Combat()
+            player.Combat(['Arden','Sprite3'],{'Arden':'$','Sprite3':'%','$':Fight},{'$':'Arden','%':'Sprite3'})
         else:
             return
     Puzzle(player)
-    MylvaPath.py_x = 10
-    MylvaPath.py_y = 1
-
-
+    
 def Puzzle(player):
-    pass
+    questions = ["How many people in the MainCity Square - when you first walk in?","How much are Goblin Ears worth according to Marina?","What position is the the first letter of '$' looking person in the alphabet?",'How many types of summons are conjured in the Tenja path and temple?']
+    answers = {"How many people in the MainCity Square - when you first walk in?":'6',"How much are Goblin Ears worth according to Marina?":'5',"What position is the the first letter of '$' looking person in the alphabet?":'4','How many types of summons are conjured in the Tenja path and temple?':'3'}
+    Type("To complete this puzzle you must answer one question correctly. Say the correct number.")
+    a = random.randint(0,3)
+    Type(questions[a])
+    Type("Enter the code.")
+    code = input(f"> ")
+    if code == answers[questions[a]]:
+        Type("You have solved the puzzle!")
+        if 'Solved' in player.curq:
+            player.curq.remove("Solved")
+            player.compq.append("Solved")
+        else:
+            player.cuts.append("Solved First")
+    else:
+        Type("That is not the correct answer.")
 
 def MylvaFollower(player):
     a = random.randint(0,1)
@@ -2742,81 +2808,224 @@ def MylvaFollower(player):
 
 def MylvaGuard(player):
     global last_loc
-    last_loc = TenjaPath
-    if 'defT' not in player.cuts:
-        Type(f"[Janus]: I am Janus, Guardian of the Tenja Temple. {player.name} why are you here?")
-        if "Defeat Tenja" in player.curq:
-            Type(f"[{player.name}]: To take your Staff.")
-            Type("[Janus]: Another ruin hunter? Please, your silly group won't be taking anything today.")
-            player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
-            Type(f"[Janus]: I can't give you my staff... It's invaluable.")
-            Type(f"[Janus]: Here, I see you have a fire amulet. I'll give you a fire gem to recharge it.")
+    last_loc = MylvaTemple
+    if 'defM' not in player.cuts:
+        Type(f"[???]: Welcome! {player.name} I've got your reward for you right here!")
+        Type("[Lovota]: My name is Lovota! I'm the Guardian of this temple - and I'm quite surprised a vistor like you was able to solve the puzzle.")
+        Type("[Lovota]: Here, an Ice Gem for your efforts!")
+        Check_Full(player,"Ice Gem")
+        Type("[Lovota]: Do you need anything else? (y/n)")
+        if "Defeat Mylva" in player.curq:
+            Type(f"[{player.name}]: To take your Shield.")
+            Type("[Lovota]: Ruin hunter? Really? And I was even kind enough to give you one of our treasures...")
+            player.Combat(['Mylva Follower 1','The Mylva Guardian','Mylva Follower 2'],{'Mylva Follower 1':'&','The Mylva Guardian':'+','Mylva Follower 2':'$','+':Fight,'$':Fight},{'&':'Mylva Follower 1','+':'The Mylva Guardian','$':'Mylva Follower 2'})
+            Type(f"[Lovota]: You've crossed a line. Take this and you'll ruin lives. Including your own.")
+            Type(f"[Lovota]: Look, I have a Cool Gem Ore. It's extremely valuable, don't take the shield.")
+            player.cuts.append('defM')
+            Type(f"[{player.name}]: I'll take both.")
+            Type("You have obtained The Shield of Mylva!")
+            Check_Full(player,"The Mylva Shield")
+            Check_Full(player,"Cool Gem Ore")
+            MylvaTemple.mapper[1][8] = '~'
+            MylvaTemple.mapper[3][8] = '~'
+            MylvaTemple.mapper[2][9] = '~'
         else:
-            Type(f"Answer? (y/n)")
             key = readchar.readkey()
             if key == 'y':
-                Type(f"[{player.name}]: To loot this ruin. I came here for treasure.")
-                Type("[Janus]: Our truest treasure has been stolen. I'm here to make sure no more valuable items go missing.")
-                player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
-            Type("[Janus]: Well. Seeing as you are not leaving, we are going to make you leave.")
-            player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
-        player.cuts.append('defT')
+                Type(f"[{player.name}]: The treasure of this ruin.")
+                Type("[Lovota]: Surely someone as smart as you can tell, our truest treasure has been taken.")
+                Type("[Lovota]: The treasure which kept us floating above people like you.")
+                Type("[Lovota]: People who need to learn a lesson or two.")
+                player.Combat(['Mylva Follower 1','The Mylva Guardian','Mylva Follower 2'],{'Mylva Follower 1':'&','The Mylva Guardian':'+','Mylva Follower 2':'$','+':Fight,'$':Fight},{'&':'Mylva Follower 1','+':'The Mylva Guardian','$':'Mylva Follower 2'})
+                player.cuts.append('defM')
+                Type(f"Spare the Guardian? (y/n)")
+                key = readchar.readkey()
+                if key == 'n':
+                    Type("[Lovota]: You have only doomed yourself...")
+                    Type("You have obtained The Shield of Mylva!")
+                    Check_Full(player,"The Mylva Shield")
+                    Check_Full(player,"Cool Gem Ore")
+                    MylvaTemple.mapper[1][8] = '~'
+                    MylvaTemple.mapper[3][8] = '~'
+                    MylvaTemple.mapper[2][9] = '~'
+                else:
+                    Type("[Lovota]: I'll glad you understand the gravity of the situation. Here this will be useful.")
+                    Check_Full(player,"Cool Gem Ore")
+            else:
+                Type("[Lovota]: Well. See you around! I'll be here, coming up with a different fun puzzle!")
     else:
-        Type("[Janus]: I already told you all that I know... If you're seen in here I could get in trouble...")
+        Type("[Lovota]: Well done with solving the puzzle! I understand why you of all people was able to solve it.")
 
 def Kai2(player):
-    pass
+    if 'Invest Tutorial' not in player.compq:
+        Type("[Kai]: I see you never bothered to listen to me.")
+        Type("[Kai]: Go. I don't want to talk to you.")
+        return
+    if 'Glowing Skull' not in player.curq and 'Sprite Essence' in player.compq:
+            Type("[Kai]: Guess What? I found out about this super rare thing about Liches.")
+            Type("[Kai]: Because they take up so much magical energy to summon if they are defeated quickly - their skulls let off a beautiful glow.")
+            Type(f"[Kai]: {player.name} if you get me a Glowing Skull, I'll give you a 100 Gold! (y/n)")
+            key = readchar.readkey()
+            if key == 'y':
+                Type("[Kai]: Great! It's super rare for it to happen so don't worry if you can't get it for me.")
+                Type("[Kai]: I've got the 100 gold ready for you if you do!!")
+                player.curq.append("Glowing Skull")
+            else:
+                Type("[Kai]: That's ok. I understand if it too much work for you...")
+    if "Glowing Skull" not in player.inv and "Glowing Skull" in player.curq:
+        Type("[Kai]: It is really rare. I'm not surprised if you don't have yet.")
+    if "Glowing Skull" in player.inv:
+        Type("[Kai]: NO WAY.")
+        Type("[Kai]: You actually achieved the impossible.")
+        Type("[Kai]: As promised I have 100 Gold for you. It was worth every penny so to speak...")
+        TenjaPath.mapper[3][11] = '~'
+        Type("QUEST COMPLETED!")
+        Type(">>>Fetch Glowing Skull<<<")
+        Type("Reward: 500 exp, 100 Gold")
+        player.curq.remove("Glowing Skull")
+        player.inv.remove("Glowing Skull")
+        player.compq.append("Glowing Skull")
+        player.exp += 500
+        player.gold += 100
+        Exp(player)
+        MaxHp(player)
 
 def Pre_Boss_Fight2(player):
-    Type("[Slime1]: Vistors can not pass here.")
-    Type(f"[{player.name}]: You can talk?")
-    Type("[Slime2]: Vistors can not pass here.")
+    Type(f"[Lich1]: Zindel did not permit {player.name} to pass here.")
+    Type(f"[{player.name}]: You are quite articulate for a summon.")
+    Type("[Lich1]: Thank you. Yet your praise is not enough to allow you passage.")
     Type("Leave? (y/n)")
     key = readchar.readkey()
     if key == 'n':
-        Type("[Slime3]: Vistors can not pass here.")
-        TenjaPath.mapper[1][11] = '~'
+        Type("[Lich3]: Did you not here my brother? Leave.")
+        XiraPath.mapper[1][11] = '~'
         global last_loc
-        last_loc = TenjaPath
-        player.Combat(['Slime1','Slime2','Slime3'],{'Slime1':'$','Slime2':'#','Slime3':'%','$':Fight},{'$':'Slime1','#':'Slime2','%':'Slime3'})
-        Type("The path before you shows a ruined temple, corrupted with fiery gems like the one within the Fire Amulet.")
+        last_loc = XiraPath
+        player.Combat(['Lich1','Lich2','Lich3'],{'Lich1':'$','Lich2':'#','Lich3':'%','$':Fight},{'$':'Lich1','#':'Lich2','%':'Lich3'})
+        Type("The path before you shows a ruined temple, embraced in a dark aura and corrupted with cool and icey gems that add a chill to the air.")
 
 def XiraFollower(player):
     a = random.randint(0,1)
     if a == 0:
-        Type("[Follower]: ...")
+        Type("[Follower]: ...Be prepared")
     elif a == 1:
         Type("[Follower]: I'm shocked you even made it here.")
 
 def XiraGuard(player):
     global last_loc
-    last_loc = TenjaPath
-    if 'defT' not in player.cuts:
-        Type(f"[Janus]: I am Janus, Guardian of the Tenja Temple. {player.name} why are you here?")
-        if "Defeat Tenja" in player.curq:
-            Type(f"[{player.name}]: To take your Staff.")
-            Type("[Janus]: Another ruin hunter? Please, your silly group won't be taking anything today.")
-            player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
-            Type(f"[Janus]: I can't give you my staff... It's invaluable.")
-            Type(f"[Janus]: Here, I see you have a fire amulet. I'll give you a fire gem to recharge it.")
+    last_loc = XiraTemple
+    if 'defX' not in player.cuts:
+        Type(f"[Zindel]: {player.name}, I know why you are here. I suggest you really think about the consquences of your actions.")
+        Type(f"[Zindel]: If you so choose we can have a conversation instead of a fight. In which you will lose.")
+        if "Defeat Xira" in player.curq:
+            Type(f"[{player.name}]: I'm here for your crown. We can skip the conversation and fight if you hand it over.")
+            Type("[Zindel]: Oh. You choose fight. A poor decision.")
+            player.Combat(['Xira Follower 1','The Xira Guardian','Xira Follower 2'],{'Xira Follower 1':'&','The Xira Guardian':'+','Xira Follower 2':'$','+':Fight,'$':Fight},{'&':'Xira Follower 1','+':'The Xira Guardian','$':'Xira Follower 2'})
+            Type(f"[Zindel]: Heavy is the crown. But the fate that will befall you is heavier...")
+            Type(f"You have obtained >>>The Crown of Ancient Javara<<<")
+            Check_Full(player,"The Xira Crown")
+            XiraTemple.mapper[1][8] = '~'
+            XiraTemple.mapper[3][8] = '~'
+            XiraTemple.mapper[2][9] = '~'
         else:
-            Type(f"Answer? (y/n)")
+            Type(f"[Zindel]: The choice is yours to make. Converse? (y/n)")
             key = readchar.readkey()
             if key == 'y':
-                Type(f"[{player.name}]: To loot this ruin. I came here for treasure.")
-                Type("[Janus]: Our truest treasure has been stolen. I'm here to make sure no more valuable items go missing.")
-                player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
-            Type("[Janus]: Well. Seeing as you are not leaving, we are going to make you leave.")
-            player.Combat(['Tenja Follower 1','The Tenja Guardian','Tenja Follower 2'],{'Tenja Follower 1':'&','The Tenja Guardian':'+','Tenja Follower 2':'$','+':Fight,'$':Fight},{'&':'Tenja Follower 1','+':'The Tenja Guardian','$':'Tenja Follower 2'})
-        player.cuts.append('defT')
+                Type(f"[{player.name}]: Let's talk.")
+                Type("[Zindel]: As I'm sure you are aware, someone has stolen the power which used to keep this island in the sky.")
+                Type("[Zindel]: It is the Gem of Xira. The person who this temple is dedicated to. Whose crown that I wear.")
+                Type("[Zindel]: I believe you can restore this island to its former glory if you so choose.")
+                Type("[Zindel]: Return the Gem to the altar in the Great Temple. But first let me see what you are really made of.")
+                player.Combat(['Xira Follower 1','The Xira Guardian','Xira Follower 2'],{'Xira Follower 1':'&','The Xira Guardian':'+','Xira Follower 2':'$','+':Fight,'$':Fight},{'&':'Xira Follower 1','+':'The Xira Guardian','$':'Xira Follower 2'})
+                Type("[Zindel]: A true fighter. To commend your tenacity, I'll allow you an escape. If you can not find the Gem, Ambrosia will return you home.")
+                player.cuts.append("Coward Ending")
+                Type("[Zindel]: However, someone like you will visit this island and they may not make the same decisions as you.")
+                Type("[Zindel]: I can only hope I can find the thief before the whole island falls to ruin. If you choose to leave of course")
+                XiraTemple.mapper[1][8] = '~'
+                XiraTemple.mapper[3][8] = '~'
+            else:
+                Type("[Zindel]: A fatal mistake, I'm sure.")
+                player.Combat(['Xira Follower 1','The Xira Guardian','Xira Follower 2'],{'Xira Follower 1':'&','The Xira Guardian':'+','Xira Follower 2':'$','+':Fight,'$':Fight},{'&':'Xira Follower 1','+':'The Xira Guardian','$':'Xira Follower 2'})
+                Type("[Zindel]: You defeated me? Such strength, surely you help save this island instead of bring its ruin.")
+                Type(f"Spare him? (y/n)")
+                key = readchar.readkey()
+                if key == 'y':
+                    Type("[Zindel]: Please, find the our truest treasure and return to the Great Temple.")
+                    Type("[Zindel]: If you need help, I am here.")
+                else:
+                    Type(f"[Zindel]: Heavy is the crown. But the fate that will befall you is heavier...")
+                    Type(f"You have obtained >>>The Crown of Ancient Javara<<<")
+                    Check_Full(player,"The Xira Crown")
+                    XiraTemple.mapper[1][8] = '~'
+                    XiraTemple.mapper[3][8] = '~'
+                    XiraTemple.mapper[2][9] = '~'
+        Tut.mapper[1][3] = '&'
+        Tut.emap = {'|':MainCity,'&':Amb3}
+        player.cuts.append('defX')
     else:
-        Type("[Janus]: I already told you all that I know... If you're seen in here I could get in trouble...")
+        Type("[Zindel]: It is called the Gem of Xira, it is purple. I trust you will find it.")
+        Type("[Zindel]: Ask around, that will probably help your search.")
+        Type("[Zindel]: Remember you need to return it to the Great Temple.")
 
 def Altar(player):
-    pass
+    if "Gem of Xira" in player.inv:
+        Type(f"[{player.name}]: It looks as if it would fit in here.")
+        Type(f"[{player.name}]: It's glowing...")
+        Type("A rumbling started to errupt from the altar. The Gem started to float hovering an inch above the stone pillar.")
+        Type("[???]: HEY! What did you just do! ANSWER ME.")
+        Type(f"[{player.name}]: Returning the island to its former glory.")
+        Type("[???]: NO! After everything I did. I WON'T LET YOU RUIN IT FOR ME.")
+        Type(f"[???]: {player.name}, you were supposed to be a greedy treasure hunter. Not a hero.")
+        Type("The person went to grab the floating gem only for them to disappear.")
+        player.cuts.append("Secret Ending")
+    else:
+        Type(f"[{player.name}]: This looks out of place to everything else in this massive temple.")
+        Type(f"[{player.name}]: Like some sort of Altar...")
 
 def GreatGuard(player):
-    pass
+    if 'Meet' in player.curq:
+        Type("[Rex]: Well done you made it past the Guard! My name is Rex, your leader.")
+        Type("[Rex]: A pleasure to meet you really. Out of all the Ruin hunters. You are by far the best one.")
+        Type("[Rex]: Now. Hand over the Relics, the Staff, the Shield and most importantly the crown.")
+        if 'The Tenja Staff' not in player.inv or 'The Mylva Shield' not in player.inv or 'The Xira Crown' not in player.inv:
+            Type(f"[{player.name}]: I lost them...")
+            Type("[Rex]: WHAT DO YOU MEAN YOU LOST THEM.")
+            Type("[Rex]: You are absolutely useless to me.")
+            Type("[BAD ENDING]: You were defeated by Rex - The Boss of the Ruin Hunters.")
+            quit()
+        else:
+            Type("[Rex]: And with these, this Island is finished.")
+            Type(f"[{player.name}]: So you are going to finally bring magic to the whole of Earth.")
+            Type("[Rex]: No stupid. I'm going to destroy it, and this whole island is going down with me.")
+            Type("[Rex]: Except Dhara I guess, someone needs to set the bombs off afterall.")
+            Type("[BAD ENDING]: Rex used the Relics to remove the magic force field which protected the island from Earth weapons.")
+            Type("[BAD ENDING]: The UN had an excuse to take out this threat of an Island, and they did. With you on it.")
+            quit()
+    else:
+        Type(f"[???]: Ah, {player.name}. It is quite interesting to see you here. I thought the Guard was preventing people from entering.")
+        Type(f"[???]: The Great Temple is a place of peace so I will not stop you from looking around.")
+        Type(f"[???]: Just stay away from the altar, it is quite sacred.")
+
+def Amb3(player):
+    if 'Coward Ending' in player.cuts:
+        Type("[Ambrosia]: Hey, I heard about what happened from Zindel, you've gotten quite strong, huh.")
+        Type(f"[{player.name}]: I want to leave. Return home.")
+        key = readchar.readkey()
+        if key == 'y':
+            Type("[Ambrosia]: I guess I will return you home... It is your choice afterall....")
+            Type(f"[COWARD ENDING]: Ambrosia returned you home. You managed to gain ${player.bank} from Dhara and {player.gold} Gold from your adventures.")
+            Type(f"[COWARD ENDING]: Maybe the Island will make it without you...")
+            quit()
+    elif 'The Xira Crown' in player.inv:
+        Type("[Ambrosia]: You have the Crown? You killed Zindel?")
+        Type("[Ambrosia]: What kind of monster have you become? Get out of my sight and find your own way home.")
+        Tut.mapper[1][3] = '&'
+    elif 'Secret Ending' in player.cuts:
+        Type("[Ambrosia]: You saved our Island! Thank you, so much! To think I was the one who brought you here.")
+        Type("[Ambrosia]: I was a pleasure to meet you, goodbye")
+        Type(f"[{player.name}]: Goodbye.")
+        Type("[SECRET ENDING]: You managed to work out how save the Island and return it to the skies!")
+        quit()
 
 GreatTemple = Area("The Great Temple", [['#','#','#','#','#','#','#','#','#','#','#','#','#'],
  ['#','=','=','=','=','=','=','=','=','=','=','+','#'],
@@ -2836,7 +3045,7 @@ XiraTemple = Area("Xira Temple", [['#','#','#','#','#','#','#','#','#','#'],
 XiraPath = Area("Xira Path", [['#','#','#','#','#','#','#','#','#','#','#','#','#'],
  ['#','~','~','.','~','~','~','.','~','~','~','£','|'],
  ['#','~','.','~','.','~','.','~','.','~','.','~','#'],
- ['#','~','~','.','~','~','~','.','~','~','~','.','#'],
+ ['#','~','~','.','~','~','~','.','~','~','~','?','#'],
  ['#','-','#','#','#','#','#','#','#','#','#','#','#']],'.',1,3,{'|':''})
 MylvaTemple = Area("Mylva Temple", [['#','#','#','#','#','#','#','#','#','#'],
  ['#','~','!','!','!','!','!','!','$','!'],
